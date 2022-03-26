@@ -73,6 +73,9 @@
     <ClCompile Include="src\helper\trianglemesh.cpp">
       <Filter>helper</Filter>
     </ClCompile>
+    <ClCompile Include="src\scenerunner.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\basic_uniform.frag">
@@ -135,9 +138,6 @@
     <ClInclude Include="src\helper\scene.h">
       <Filter>helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\helper\scenerunner.h">
-      <Filter>helper</Filter>
-    </ClInclude>
     <ClInclude Include="src\helper\teapot.h">
       <Filter>helper</Filter>
     </ClInclude>
@@ -155,6 +155,9 @@
     </ClInclude>
     <ClInclude Include="src\helper\stb\stb_image_write.h">
       <Filter>helper\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scenerunner.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,17 +1,11 @@
-#include "glutils.h"
-#include <glad/glad.h>
-
-#include <cstdio>
-#include <string>
-using std::string;
-#include <iostream>
+#include "../pch.h"
 
 namespace GLUtils {
 
 void APIENTRY debugCallback( GLenum source, GLenum type, GLuint id,
 	GLenum severity, GLsizei length, const GLchar * msg, const void * param ) {
 
-	string sourceStr;
+	std::string sourceStr;
 	switch(source) {
 	case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
 		sourceStr = "WindowSys";
@@ -35,7 +29,7 @@ void APIENTRY debugCallback( GLenum source, GLenum type, GLuint id,
 		sourceStr = "Unknown";
 	}
 	
-	string typeStr;
+	std::string typeStr;
 	switch(type) {
 	case GL_DEBUG_TYPE_ERROR:
 		typeStr = "Error";
@@ -68,27 +62,23 @@ void APIENTRY debugCallback( GLenum source, GLenum type, GLuint id,
 		typeStr = "Unknown";
 	}
 	
-	string sevStr;
 	switch(severity) {
 	case GL_DEBUG_SEVERITY_HIGH:
-		sevStr = "HIGH";
+		LOG_CRITICAL("{} : {} ({}): {}", sourceStr, typeStr, id, msg);
 		break;
 	case GL_DEBUG_SEVERITY_MEDIUM:
-		sevStr = "MED";
+		LOG_ERROR("{} : {} ({}): {}", sourceStr, typeStr, id, msg);
 		break;
 	case GL_DEBUG_SEVERITY_LOW:
-		sevStr = "LOW";
+		LOG_INFO("{} : {} ({}): {}", sourceStr, typeStr, id, msg);
 		break;
 	case GL_DEBUG_SEVERITY_NOTIFICATION:
-		sevStr = "NOTIFY";
+		LOG_INFO("{} : {} ({}): {}", sourceStr, typeStr, id, msg);
 		break;
 	default:
-		sevStr = "UNK";
+		break;
 	}
-	
-	std::cerr << sourceStr << ":" << typeStr << "[" << sevStr << "]" << "(" << id << "): " << msg << std::endl;
 }
-
 
 int checkForOpenGLError(const char * file, int line) {
     //
@@ -129,35 +119,36 @@ int checkForOpenGLError(const char * file, int line) {
     return retCode;
 }
 
-void dumpGLInfo(bool dumpExtensions) {
-    const GLubyte *renderer = glGetString( GL_RENDERER );
-    const GLubyte *vendor = glGetString( GL_VENDOR );
-    const GLubyte *version = glGetString( GL_VERSION );
-    const GLubyte *glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );
+void dumpGLInfo(bool dumpExtensions)
+{
+	auto renderer = glGetString(GL_RENDERER);
+	auto vendor = glGetString(GL_VENDOR);
+	auto version = glGetString(GL_VERSION);
+	auto glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
-    GLint major, minor, samples, sampleBuffers;
-    glGetIntegerv(GL_MAJOR_VERSION, &major);
-    glGetIntegerv(GL_MINOR_VERSION, &minor);
+	GLint major, minor, samples, sampleBuffers;
+	glGetIntegerv(GL_MAJOR_VERSION, &major);
+	glGetIntegerv(GL_MINOR_VERSION, &minor);
 	glGetIntegerv(GL_SAMPLES, &samples);
 	glGetIntegerv(GL_SAMPLE_BUFFERS, &sampleBuffers);
 	
-	printf("-------------------------------------------------------------\n");
-    printf("GL Vendor    : %s\n", vendor);
-    printf("GL Renderer  : %s\n", renderer);
-    printf("GL Version   : %s\n", version);
-    printf("GL Version   : %d.%d\n", major, minor);
-    printf("GLSL Version : %s\n", glslVersion);
-	printf("MSAA samples : %d\n", samples);
-	printf("MSAA buffers : %d\n", sampleBuffers);
-    printf("-------------------------------------------------------------\n");
+	LOG_INFO("-------------------------------------------------------------");
+	LOG_INFO("GL Vendor     : {}", vendor);
+	LOG_INFO("GL Renderer   : {}", renderer);
+	LOG_INFO("GL Version    : {}", version);
+	LOG_INFO("GL Version    : {}.{}", major, minor);
+	LOG_INFO("GLSL Version  : {}", glslVersion);
+	LOG_INFO("MSAA samples  : {}", samples);
+	LOG_INFO("MSAA buffers  : {}", sampleBuffers);
+	LOG_INFO("-------------------------------------------------------------");
 
-    if( dumpExtensions ) {
-        GLint nExtensions;
-        glGetIntegerv(GL_NUM_EXTENSIONS, &nExtensions);
-        for( int i = 0; i < nExtensions; i++ ) {
-            printf("%s\n", glGetStringi(GL_EXTENSIONS, i));
-        }
-    }
+	if (dumpExtensions)
+	{
+		GLint nExtensions;
+		glGetIntegerv(GL_NUM_EXTENSIONS, &nExtensions);
+		for (int i = 0; i < nExtensions; i++)
+			LOG_INFO("{}", glGetStringi(GL_EXTENSIONS, i));
+	}
 }
 
 } // namespace GLUtils

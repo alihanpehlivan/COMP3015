@@ -1,8 +1,5 @@
+#include "../pch.h"
 #include "torus.h"
-#include <glad/glad.h>
-#include <cstdio>
-#include <cmath>
-#include <glm/gtc/constants.hpp>
 
 Torus::Torus(GLfloat outerRadius, GLfloat innerRadius, GLuint nsides, GLuint nrings)
 {

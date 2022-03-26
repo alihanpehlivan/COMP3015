@@ -15,12 +15,12 @@ private:
 
     void setMatrices();
 
-    void compile();
+    bool compile();
 
 public:
     SceneBasic_Uniform();
 
-    void initScene();
+    bool initScene();
     void update( float t );
     void render();
     void resize(int, int);

@@ -1,10 +1,7 @@
+#include "../pch.h"
 #include "teapot.h"
 #include "teapotdata.h"
-#include <glad/glad.h>
 
-#include <cstdio>
-
-#include <glm/gtc/matrix_transform.hpp>
 using glm::vec3;
 using glm::mat4;
 using glm::mat3;

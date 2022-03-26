@@ -1,3 +1,4 @@
+#include "../pch.h"
 #include "trianglemesh.h"
 
 void TriangleMesh::initBuffers(

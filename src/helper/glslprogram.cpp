@@ -1,16 +1,8 @@
-#include "glslprogram.h"
-
-#include "glutils.h"
-
-#include <fstream>
+#include "../pch.h"
 
 using std::ifstream;
 using std::ios;
 using std::string;
-
-#include <sstream>
-#include <sys/stat.h>
-#include <vector>
 
 namespace GLSLShaderInfo {
 	std::map<std::string, GLSLShader::GLSLShaderType> extensions = {

@@ -14,11 +14,11 @@ bool Log::Init(const std::string& processFileName)
 
 		//Log console sink
 		auto log_console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-		log_console_sink->set_pattern("%v%$");
+		log_console_sink->set_pattern("[%l] %v%$");
 
 		//Log file sink
 		auto log_file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(fmt::format("{}.log", processFileName), true);
-		log_file_sink->set_pattern("[%d/%m/%C %T.%e] %v");
+		log_file_sink->set_pattern("[%d/%m/%C %T.%e] [%l] %v");
 
 		std::vector<spdlog::sink_ptr> log_sinks{ log_console_sink, log_file_sink };
 

@@ -11,9 +11,11 @@ SceneBasic_Uniform::SceneBasic_Uniform() : torus(0.7f, 0.3f, 50, 50) {}
 //constructor for teapot
 //SceneBasic_Uniform::SceneBasic_Uniform() : teapot(13, glm::translate(mat4(1.0f), vec3(0.0f, 1.5f, 0.25f))) {}
 
-void SceneBasic_Uniform::initScene()
+bool SceneBasic_Uniform::initScene()
 {
-    compile();
+    if (!compile())
+        return false;
+
 	glEnable(GL_DEPTH_TEST);
    
     //initialise the model matrix
@@ -35,19 +37,26 @@ void SceneBasic_Uniform::initScene()
     prog.setUniform("Material.Kd", 0.2f, 0.55f, 0.9f); //seting the Kd uniform
     prog.setUniform("Light.Ld", 1.0f, 1.0f, 1.0f);     //setting the Ld uniform
     prog.setUniform("Light.Position", view * glm::vec4(5.0f, 5.0f, 2.0f, 0.0f)); //setting Light Position
+
+    return true;
 }
 
-void SceneBasic_Uniform::compile()
+bool SceneBasic_Uniform::compile()
 {
-	try {
+	try
+    {
 		prog.compileShader("shader/basic_uniform.vert");
 		prog.compileShader("shader/basic_uniform.frag");
 		prog.link();
 		prog.use();
-	} catch (GLSLProgramException &e) {
-		std::cerr << e.what() << std::endl;
-		exit(EXIT_FAILURE);
 	}
+    catch (GLSLProgramException &e)
+    {
+        LOG_CRITICAL(e.what());
+        return false;
+	}
+
+    return true;
 }
 
 static void ImGui_Render()

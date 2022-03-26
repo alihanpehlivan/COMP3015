@@ -1,6 +1,5 @@
 #include "pch.h"
-#include "helper/scene.h"
-#include "helper/scenerunner.h"
+#include "scenerunner.h"
 #include "scenebasic_uniform.h"
 
 // Linking External Libraries
@@ -24,8 +23,14 @@ int WinMain(
     if (!Log::Init("renderer"))
         return EXIT_FAILURE;
 
-	SceneRunner runner("Alihan's Custom Renderer w/ Shaders");
+	SceneRunner runner;
+	runner.init("Alihan's Custom Renderer w/ Shaders");
 
 	auto scene = std::make_unique<SceneBasic_Uniform>();
-	return runner.run(*scene);
+	auto res = runner.run(scene.get());
+
+	LOG_INFO("program terminated with: {}", res ? "SUCCESS" : "ERROR");
+
+	Log::Destroy();
+	return res;
 }

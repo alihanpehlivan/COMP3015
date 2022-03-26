@@ -21,5 +21,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+// Utilities
+#include "helper/glutils.h"
+#include "helper/glslprogram.h"
+
 // Custom logger
 #include "log.h"
