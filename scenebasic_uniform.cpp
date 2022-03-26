@@ -1,12 +1,9 @@
+#include "pch.h"
 #include "scenebasic_uniform.h"
+#include "imgui/imgui_impl_opengl3.h"
+#include "imgui/imgui_impl_glfw.h"
 
-#include <iostream>
-using std::cerr;
-using std::endl;
-
-#include <glm/gtc/matrix_transform.hpp>
-using glm::vec3;
-using glm::mat4;
+static ImVec4 s_ClearColor = ImVec4(25 / 255.0f, 25 / 255.0f, 25 / 255.0f, 1.00f);
 
 //constructor for torus
 SceneBasic_Uniform::SceneBasic_Uniform() : torus(0.7f, 0.3f, 50, 50) {}
@@ -20,19 +17,19 @@ void SceneBasic_Uniform::initScene()
 	glEnable(GL_DEPTH_TEST);
    
     //initialise the model matrix
-    model = mat4(1.0f);
+    model = glm::mat4(1.0f);
     
     //enable this group for torus rendering, make sure you comment the teapot group
-    model = glm::rotate(model, glm::radians(-35.0f), vec3(1.0f, 0.0f, 0.0f)); //rotate model on x axis
-    model = glm::rotate(model, glm::radians(15.0f), vec3(0.0f, 1.0f, 0.0f));  //rotate model on y axis
-    view = glm::lookAt(vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f)); //sets the view - read in the documentation about glm::lookAt. if still have questions,come an dtalk to me
+    model = glm::rotate(model, glm::radians(-35.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //rotate model on x axis
+    model = glm::rotate(model, glm::radians(15.0f), glm::vec3(0.0f, 1.0f, 0.0f));  //rotate model on y axis
+    view = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //sets the view - read in the documentation about glm::lookAt. if still have questions,come an dtalk to me
 
     //enable this group for teapot rendering, make sure you comment the torus group
     //model = glm::translate(model, vec3(0.0, -1.0, 0.0));
     //model = glm::rotate(model, glm::radians(-90.0f), vec3(1.0f, 0.0f, 0.0f));
     //view = glm::lookAt(vec3(2.0f, 4.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
-    projection = mat4(1.0f);
+    projection = glm::mat4(1.0f);
 
     //make sure you use the correct name, check your vertex shader
     prog.setUniform("Material.Kd", 0.2f, 0.55f, 0.9f); //seting the Kd uniform
@@ -48,12 +45,44 @@ void SceneBasic_Uniform::compile()
 		prog.link();
 		prog.use();
 	} catch (GLSLProgramException &e) {
-		cerr << e.what() << endl;
+		std::cerr << e.what() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 }
 
-void SceneBasic_Uniform::update( float t )
+static void ImGui_Render()
+{
+    // Create the frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // Beginning of the window
+    ImGui::Begin("Render Settings");
+
+    // ----
+    ImGui::Spacing();
+
+    // ----
+    ImGui::Separator();
+    ImGui::Text("Background Settings:");
+    ImGui::ColorEdit3("Color", (float*)&s_ClearColor); // Edit 3 floats representing a color
+
+    // ----
+    ImGui::Separator();
+    ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+    // End of the frame
+    ImGui::End();
+
+    // Prepare RenderDrawData
+    ImGui::Render();
+
+    // Present RenderData
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void SceneBasic_Uniform::update(float t)
 {
     if (m_animate)
     {
@@ -65,24 +94,28 @@ void SceneBasic_Uniform::update( float t )
 
 void SceneBasic_Uniform::render()
 {
+    glClearColor(s_ClearColor.x, s_ClearColor.y, s_ClearColor.z, s_ClearColor.w);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     setMatrices(); //we set matrices 
     torus.render();     //we render the torus
-    //teapot.render();  
+    //teapot.render();
+
+    // ImGui renders on top of everything
+    ImGui_Render();
 }
 
 void SceneBasic_Uniform::setMatrices()
 {
-    mat4 mv = view * model; //we create a model view matrix
+    glm::mat4 mv = view * model; //we create a model view matrix
     
     prog.setUniform("ModelViewMatrix", mv); //set the uniform for the model view matrix
     
-    prog.setUniform("NormalMatrix", glm::mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2]))); //we set the uniform for normal matrix
+    prog.setUniform("NormalMatrix", glm::mat3(glm::vec3(mv[0]), glm::vec3(mv[1]), glm::vec3(mv[2]))); //we set the uniform for normal matrix
     
     prog.setUniform("MVP", projection * mv); //we set the model view matrix by multiplying the mv with the projection matrix
 
-    prog.setUniform("RotationMatrix", glm::rotate(glm::mat4(1.0f), angle, vec3(1.0f, 1.0f, 0.0f)));
+    prog.setUniform("RotationMatrix", glm::rotate(glm::mat4(1.0f), angle, glm::vec3(1.0f, 1.0f, 0.0f)));
 }
 
 void SceneBasic_Uniform::resize(int w, int h)

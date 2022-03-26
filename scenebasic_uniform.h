@@ -1,14 +1,9 @@
-#ifndef SCENEBASIC_UNIFORM_H
-#define SCENEBASIC_UNIFORM_H
+#pragma once
 
 #include "helper/scene.h"
-
-#include <glad/glad.h>
 #include "helper/glslprogram.h"
-
 #include "helper/torus.h"
 #include "helper/teapot.h"
-#include <glm/glm.hpp>
 
 class SceneBasic_Uniform : public Scene
 {
@@ -30,5 +25,3 @@ public:
     void render();
     void resize(int, int);
 };
-
-#endif // SCENEBASIC_UNIFORM_H

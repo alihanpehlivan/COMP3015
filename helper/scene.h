@@ -1,8 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 class Scene
 {
 protected:
@@ -15,30 +12,22 @@ public:
 	Scene() : m_animate(true), width(800), height(600) { }
 	virtual ~Scene() {}
 
-	void setDimensions( int w, int h ) {
-	    width = w;
-	    height = h;
-	}
-	
-    /**
-      Load textures, initialize shaders, etc.
-      */
+    void setDimensions(int w, int h)
+    {
+        width = w;
+        height = h;
+    }
+   
+    // Load textures, initialize shaders, etc.
     virtual void initScene() = 0;
 
-    /**
-      This is called prior to every frame.  Use this
-      to update your animation.
-      */
+    // This is called prior to every frame.  Use this to update your animation.
     virtual void update( float t ) = 0;
 
-    /**
-      Draw your scene.
-      */
+    // Draw your scene.
     virtual void render() = 0;
-
-    /**
-      Called when screen is resized
-      */
+    
+    // Called when screen is resized
     virtual void resize(int, int) = 0;
     
     void animate( bool value ) { m_animate = value; }
