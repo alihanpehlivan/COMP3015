@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "scenerunner.h"
+#include "helper/camera.h"
 #include "helper/scene.h"
 #include <GLFW/glfw3.h>
 
@@ -40,8 +41,11 @@ bool SceneRunner::init(const std::string& title, int width, int height, int samp
     if (_samples > 0)
         glfwWindowHint(GLFW_SAMPLES, _samples);
 
+    _width = width;
+    _height = height;
+
     // Create the window
-    _window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, title.c_str(), NULL, NULL);
+    _window = glfwCreateWindow(_width, _height, title.c_str(), NULL, NULL);
 
     if (!_window)
     {
@@ -50,7 +54,7 @@ bool SceneRunner::init(const std::string& title, int width, int height, int samp
     }
 
     glfwMakeContextCurrent(_window);
-    glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(1); // Enable vsync. NOTE: This will also cap frames to 60.
 
     // Setup callbacks
     {
@@ -129,8 +133,9 @@ bool SceneRunner::init(const std::string& title, int width, int height, int samp
 	return true;
 }
 
-int SceneRunner::run(Scene* scene)
+int SceneRunner::run(Camera* camera, Scene* scene)
 {
+    _camera = camera;
     _scene = scene;
 
 	assert(_window != nullptr);
@@ -169,7 +174,16 @@ void SceneRunner::loop()
     {
         GLUtils::checkForOpenGLError(__FILE__, __LINE__);
 
-        _scene->update(float(glfwGetTime()));
+        // per-frame time
+        float currentFrame = static_cast<float>(glfwGetTime());
+        _deltaTime = currentFrame - _lastFrame;
+        _lastFrame = currentFrame;
+
+        _scene->update(currentFrame);
+
+        _scene->UpdateViewMatrix(_camera->GetViewMatrix());
+        _scene->UpdateProjMatrix(glm::perspective(glm::radians(_camera->Zoom), (float)_width / (float)_height, 0.1f, 100.0f));
+
         _scene->render();
 
         glfwSwapBuffers(_window);
@@ -180,24 +194,29 @@ void SceneRunner::loop()
 void SceneRunner::OnPressKey(int key, int scancode, int action, int mods)
 {
     assert(_window != nullptr);
+    assert(_camera != nullptr);
     //LOG_INFO("EVENT: press key {} => {} {} {}", key, action, scancode, mods);
 
     switch (key)
     {
     case GLFW_KEY_W:
-        if (action == GLFW_PRESS) LOG_INFO("move forward");
+        //if (action == GLFW_PRESS)
+            _camera->ProcessKeyboard(Camera::FORWARD, _deltaTime);
         break;
     case GLFW_KEY_S:
-        if (action == GLFW_PRESS) LOG_INFO("move backward");
+        //if (action == GLFW_PRESS)
+            _camera->ProcessKeyboard(Camera::BACKWARD, _deltaTime);
         break;
     case GLFW_KEY_A:
-        if (action == GLFW_PRESS) LOG_INFO("move left");
+        //if (action == GLFW_PRESS)
+            _camera->ProcessKeyboard(Camera::LEFT, _deltaTime);
         break;
     case GLFW_KEY_D:
-        if (action == GLFW_PRESS) LOG_INFO("move right");
+        //if (action == GLFW_PRESS)
+            _camera->ProcessKeyboard(Camera::RIGHT, _deltaTime);
         break;
     case GLFW_KEY_SPACE:
-        if (action == GLFW_PRESS) _scene->animate(!_scene->animating());
+        if (action == GLFW_PRESS)_scene->animate(!_scene->animating());
         break;
     case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(_window, 1);
@@ -207,22 +226,36 @@ void SceneRunner::OnPressKey(int key, int scancode, int action, int mods)
     }
 }
 
+float lastX = 1024 / 2.0f;
+float lastY = 768 / 2.0f;
+
 void SceneRunner::OnMouseMove(double x, double y)
 {
+    assert(_camera != nullptr);
     //LOG_INFO("EVENT: mouse move {}, {}", x, y);
 
-    //TODO: camera change position
+    float xpos = static_cast<float>(x);
+    float ypos = static_cast<float>(y);
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    _camera->ProcessMouseMovement(xoffset, yoffset);
 }
 
 void SceneRunner::OnMouseScroll(double xoffset, double yoffset)
 {
+    assert(_camera != nullptr);
     //LOG_INFO("EVENT: mouse scroll {}, {}", xoffset, yoffset);
-
-    //TODO: camera zoom in/out
+    _camera->ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
 void SceneRunner::OnResizeFramebuffer(int width, int height)
 {
     assert(_scene != nullptr);
+    LOG_INFO("EVENT: resize frame buffer to {}x{}", width, height);
     _scene->resize(width, height);
 }

@@ -76,6 +76,9 @@
     <ClCompile Include="src\scenerunner.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\helper\camera.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\basic_uniform.frag">
@@ -158,6 +161,9 @@
     </ClInclude>
     <ClInclude Include="src\scenerunner.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\camera.h">
+      <Filter>helper</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

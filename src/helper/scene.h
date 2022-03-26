@@ -3,7 +3,7 @@
 class Scene
 {
 protected:
-	glm::mat4 model{}, view{}, projection{}, rotationMatrix{};
+	glm::mat4 model{}, view{}, projection{};
 
 public:
     int width;
@@ -24,6 +24,9 @@ public:
     // This is called prior to every frame.  Use this to update your animation.
     virtual void update( float t ) = 0;
 
+    virtual void UpdateViewMatrix(glm::mat4 viewMatrix) = 0;
+    virtual void UpdateProjMatrix(glm::mat4 projMatrix) = 0;
+
     // Draw your scene.
     virtual void render() = 0;
     
@@ -34,7 +37,7 @@ public:
     bool animating() { return m_animate; }
     
 protected:
-	bool m_animate;
-    float angle = 0.f;
+	bool m_animate = true;
+    float _radians = 0.f;
 
 };

@@ -17,7 +17,7 @@ bool SceneBasic_Uniform::initScene()
         return false;
 
 	glEnable(GL_DEPTH_TEST);
-   
+
     //initialise the model matrix
     model = glm::mat4(1.0f);
     
@@ -95,9 +95,7 @@ void SceneBasic_Uniform::update(float t)
 {
     if (m_animate)
     {
-        angle += 0.1f;
-        if (angle >= 360.0f)
-            angle -= 360.0f;
+        _radians = std::max<float>(90.f, _radians + 0.08f);
     }
 }
 
@@ -106,8 +104,8 @@ void SceneBasic_Uniform::render()
     glClearColor(s_ClearColor.x, s_ClearColor.y, s_ClearColor.z, s_ClearColor.w);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    setMatrices(); //we set matrices 
-    torus.render();     //we render the torus
+    setMatrices();  // we set matrices 
+    torus.render(); // we render the torus
     //teapot.render();
 
     // ImGui renders on top of everything
@@ -116,6 +114,8 @@ void SceneBasic_Uniform::render()
 
 void SceneBasic_Uniform::setMatrices()
 {
+    model = glm::rotate(glm::mat4(1.0f), _radians, glm::vec3(0.0f, 1.0f, 0.0f));  //rotate model on y axis
+
     glm::mat4 mv = view * model; //we create a model view matrix
     
     prog.setUniform("ModelViewMatrix", mv); //set the uniform for the model view matrix
@@ -123,8 +123,6 @@ void SceneBasic_Uniform::setMatrices()
     prog.setUniform("NormalMatrix", glm::mat3(glm::vec3(mv[0]), glm::vec3(mv[1]), glm::vec3(mv[2]))); //we set the uniform for normal matrix
     
     prog.setUniform("MVP", projection * mv); //we set the model view matrix by multiplying the mv with the projection matrix
-
-    prog.setUniform("RotationMatrix", glm::rotate(glm::mat4(1.0f), angle, glm::vec3(1.0f, 1.0f, 0.0f)));
 }
 
 void SceneBasic_Uniform::resize(int w, int h)
@@ -133,4 +131,14 @@ void SceneBasic_Uniform::resize(int w, int h)
     width = w;
     height = h;
     projection = glm::perspective(glm::radians(70.0f), (float)w / h, 0.3f, 100.0f);
+}
+
+void SceneBasic_Uniform::UpdateViewMatrix(glm::mat4 viewMatrix)
+{
+    view = viewMatrix;
+}
+
+void SceneBasic_Uniform::UpdateProjMatrix(glm::mat4 projMatrix)
+{
+    projection = projMatrix;
 }

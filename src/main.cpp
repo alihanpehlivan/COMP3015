@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "helper/camera.h"
 #include "scenerunner.h"
 #include "scenebasic_uniform.h"
 
@@ -27,7 +28,9 @@ int WinMain(
 	runner.init("Alihan's Custom Renderer w/ Shaders");
 
 	auto scene = std::make_unique<SceneBasic_Uniform>();
-	auto res = runner.run(scene.get());
+	auto camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	auto res = runner.run(camera.get(), scene.get());
 
 	LOG_INFO("program terminated with: {}", res ? "FAILURE" : "SUCCESS");
 	Log::Destroy();
