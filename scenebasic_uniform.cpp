@@ -55,7 +55,8 @@ void SceneBasic_Uniform::compile()
 
 void SceneBasic_Uniform::update( float t )
 {
-    if (m_animate) {
+    if (m_animate)
+    {
         angle += 0.1f;
         if (angle >= 360.0f)
             angle -= 360.0f;
@@ -81,9 +82,7 @@ void SceneBasic_Uniform::setMatrices()
     
     prog.setUniform("MVP", projection * mv); //we set the model view matrix by multiplying the mv with the projection matrix
 
-    auto programHandle = prog.getHandle();
-    auto location = glGetUniformLocation(programHandle, "RotationMatrix");
-    glUniformMatrix4fv(location, 1, GL_FALSE, &rotationMatrix[0][0]);
+    prog.setUniform("RotationMatrix", glm::rotate(glm::mat4(1.0f), angle, vec3(1.0f, 1.0f, 0.0f)));
 }
 
 void SceneBasic_Uniform::resize(int w, int h)
