@@ -52,6 +52,35 @@ bool SceneRunner::init(const std::string& title, int width, int height, int samp
     glfwMakeContextCurrent(_window);
     glfwSwapInterval(1); // Enable vsync
 
+    // Setup callbacks
+    {
+        glfwSetWindowUserPointer(_window, this);
+
+        auto fKeyCallback = [](GLFWwindow* window, int key, int scancode, int action, int mods)
+        {
+            static_cast<SceneRunner*>(glfwGetWindowUserPointer(window))->OnPressKey(key, scancode, action, mods);
+        };
+        glfwSetKeyCallback(_window, fKeyCallback);
+
+        auto fResizeFrameBufferCallback = [](GLFWwindow* window, int width, int height)
+        {
+            static_cast<SceneRunner*>(glfwGetWindowUserPointer(window))->OnResizeFramebuffer(width, height);
+        };
+        glfwSetFramebufferSizeCallback(_window, fResizeFrameBufferCallback);
+
+        auto fMouseMoveCallback = [](GLFWwindow* window, double x, double y)
+        {
+            static_cast<SceneRunner*>(glfwGetWindowUserPointer(window))->OnMouseMove(x, y);
+        };
+        glfwSetCursorPosCallback(_window, fMouseMoveCallback);
+
+        auto fMouseScrollCallback = [](GLFWwindow* window, double xoffset, double yoffset)
+        {
+            static_cast<SceneRunner*>(glfwGetWindowUserPointer(window))->OnMouseScroll(xoffset, yoffset);
+        };
+        glfwSetScrollCallback(_window, fMouseScrollCallback);
+    }
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -102,18 +131,21 @@ bool SceneRunner::init(const std::string& title, int width, int height, int samp
 
 int SceneRunner::run(Scene* scene)
 {
-	assert(_window != nullptr);
+    _scene = scene;
 
-    scene->setDimensions(_fbw, _fbh);
-    bool ret = scene->initScene();
-    scene->resize(_fbw, _fbh);
+	assert(_window != nullptr);
+	assert(_scene != nullptr);
+
+    _scene->setDimensions(_fbw, _fbh);
+    bool ret = _scene->initScene();
+    _scene->resize(_fbw, _fbh);
 
     // If can't initialize the scene, gracefully shut down the app
     if (!ret)
         glfwSetWindowShouldClose(_window, 1);
 
     // Enter the main loop
-    loop(_window, scene);
+    loop();
 
 #ifndef __APPLE__
     if (_debug)
@@ -128,23 +160,69 @@ int SceneRunner::run(Scene* scene)
     return EXIT_SUCCESS;
 }
 
-void SceneRunner::loop(GLFWwindow* window, Scene* scene)
+void SceneRunner::loop()
 {
 	assert(_window != nullptr);
+    assert(_scene != nullptr);
 
-    while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_ESCAPE))
+    while (!glfwWindowShouldClose(_window))
     {
         GLUtils::checkForOpenGLError(__FILE__, __LINE__);
 
-        scene->update(float(glfwGetTime()));
-        scene->render();
+        _scene->update(float(glfwGetTime()));
+        _scene->render();
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(_window);
         glfwPollEvents();
-
-        int state = glfwGetKey(window, GLFW_KEY_SPACE);
-
-        if (state == GLFW_PRESS)
-            scene->animate(!scene->animating());
     }
+}
+
+void SceneRunner::OnPressKey(int key, int scancode, int action, int mods)
+{
+    assert(_window != nullptr);
+    //LOG_INFO("EVENT: press key {} => {} {} {}", key, action, scancode, mods);
+
+    switch (key)
+    {
+    case GLFW_KEY_W:
+        if (action == GLFW_PRESS) LOG_INFO("move forward");
+        break;
+    case GLFW_KEY_S:
+        if (action == GLFW_PRESS) LOG_INFO("move backward");
+        break;
+    case GLFW_KEY_A:
+        if (action == GLFW_PRESS) LOG_INFO("move left");
+        break;
+    case GLFW_KEY_D:
+        if (action == GLFW_PRESS) LOG_INFO("move right");
+        break;
+    case GLFW_KEY_SPACE:
+        if (action == GLFW_PRESS) _scene->animate(!_scene->animating());
+        break;
+    case GLFW_KEY_ESCAPE:
+        glfwSetWindowShouldClose(_window, 1);
+        break;
+    default:
+        break;
+    }
+}
+
+void SceneRunner::OnMouseMove(double x, double y)
+{
+    //LOG_INFO("EVENT: mouse move {}, {}", x, y);
+
+    //TODO: camera change position
+}
+
+void SceneRunner::OnMouseScroll(double xoffset, double yoffset)
+{
+    //LOG_INFO("EVENT: mouse scroll {}, {}", xoffset, yoffset);
+
+    //TODO: camera zoom in/out
+}
+
+void SceneRunner::OnResizeFramebuffer(int width, int height)
+{
+    assert(_scene != nullptr);
+    _scene->resize(width, height);
 }

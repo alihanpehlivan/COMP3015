@@ -90,7 +90,7 @@ int checkForOpenGLError(const char * file, int line) {
     glErr = glGetError();
     while (glErr != GL_NO_ERROR)
     {
-		const char * message = "";
+		const char * message = "Unknown error";
 		switch( glErr )
 		{
 		case GL_INVALID_ENUM:
@@ -109,10 +109,10 @@ int checkForOpenGLError(const char * file, int line) {
 			message = "Out of memory";
 			break;
 		default:
-			message = "Unknown error";
+			break;
 		}
 
-        printf("glError in file %s @ line %d: %s\n", file, line, message);
+		LOG_CRITICAL("glError in file {} @ line {}: {}", file, line, message);
         retCode = 1;
         glErr = glGetError();
     }

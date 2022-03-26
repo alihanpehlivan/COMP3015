@@ -29,8 +29,7 @@ int WinMain(
 	auto scene = std::make_unique<SceneBasic_Uniform>();
 	auto res = runner.run(scene.get());
 
-	LOG_INFO("program terminated with: {}", res ? "SUCCESS" : "ERROR");
-
+	LOG_INFO("program terminated with: {}", res ? "FAILURE" : "SUCCESS");
 	Log::Destroy();
 	return res;
 }
