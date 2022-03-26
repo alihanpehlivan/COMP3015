@@ -21,7 +21,7 @@ int WinMain(
 )
 {
 	// Setup my custom logger
-    if (!Log::Init("FontRenderer"))
+    if (!Log::Init("renderer"))
         return EXIT_FAILURE;
 
 	SceneRunner runner("Alihan's Custom Renderer w/ Shaders");

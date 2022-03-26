@@ -1,51 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="shaders">
       <UniqueIdentifier>{d6ca4009-877c-4d89-9774-b4c1370f02f1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="helper">
-      <UniqueIdentifier>{6efe3a76-edc0-4f6f-b45a-1869ab863c2c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="helper\stb">
-      <UniqueIdentifier>{2eeab77b-5d84-4893-b9df-1b2ed789b189}</UniqueIdentifier>
     </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{36213d09-a13c-4640-8710-f9e435f0b974}</UniqueIdentifier>
     </Filter>
-    <Filter Include="logger">
-      <UniqueIdentifier>{e3871e43-d722-403c-9288-a3bb17e438ed}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="helper">
+      <UniqueIdentifier>{e41ebab5-aae6-4bb0-b765-3cb71e3b4a3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="helper\stb">
+      <UniqueIdentifier>{507f5bf6-085d-418d-b3cb-b5cbef837fb1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="helper\glutils.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
-    <ClCompile Include="helper\glslprogram.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
-    <ClCompile Include="scenebasic_uniform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="helper\torus.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
-    <ClCompile Include="helper\trianglemesh.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
-    <ClCompile Include="helper\teapot.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
     <ClCompile Include="imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -70,11 +43,35 @@
     <ClCompile Include="imgui\imgui_stdlib.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\glad.c">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="log.cpp">
-      <Filter>logger</Filter>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scenebasic_uniform.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\log.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\glslprogram.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\glutils.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\teapot.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\torus.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\trianglemesh.cpp">
+      <Filter>helper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -87,42 +84,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="helper\scene.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\scenerunner.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\stb\stb_image.h">
-      <Filter>helper\stb</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\stb\stb_image_write.h">
-      <Filter>helper\stb</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\glutils.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\glslprogram.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\torus.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\trianglemesh.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\drawable.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\teapot.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\teapotdata.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="scenebasic_uniform.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
       <Filter>imgui</Filter>
     </ClInclude>
@@ -153,11 +114,47 @@
     <ClInclude Include="imgui\imgui_impl_opengl3_loader.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="src\pch.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="log.h">
-      <Filter>logger</Filter>
+    <ClInclude Include="src\scenebasic_uniform.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\log.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\drawable.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\glslprogram.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\glutils.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\scene.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\scenerunner.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\teapot.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\teapotdata.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\torus.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\trianglemesh.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\stb\stb_image.h">
+      <Filter>helper\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\stb\stb_image_write.h">
+      <Filter>helper\stb</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "scenebasic_uniform.h"
-#include "imgui/imgui_impl_opengl3.h"
-#include "imgui/imgui_impl_glfw.h"
+#include "../imgui/imgui_impl_opengl3.h"
+#include "../imgui/imgui_impl_glfw.h"
 
 static ImVec4 s_ClearColor = ImVec4(25 / 255.0f, 25 / 255.0f, 25 / 255.0f, 1.00f);
 
