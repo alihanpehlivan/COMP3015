@@ -1,11 +1,12 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 class Scene
 {
 protected:
-	glm::mat4 model, view, projection;
+	glm::mat4 model{}, view{}, projection{}, rotationMatrix{};
 
 public:
     int width;
@@ -45,4 +46,6 @@ public:
     
 protected:
 	bool m_animate;
+    float angle = 0.f;
+
 };

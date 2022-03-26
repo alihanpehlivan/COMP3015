@@ -24,7 +24,8 @@ uniform struct MaterialInfo
 uniform mat4 ModelViewMatrix;   //model view matrix
 uniform mat3 NormalMatrix;		//normal matrix
 uniform mat4 MVP;				//model view projection matrix
- 
+uniform mat4 RotationMatrix;
+
 void main() 
 { 
   //transfrom normal from model coordinates to view coordinates
@@ -47,5 +48,5 @@ void main()
 
   //turns any vertex position into model view projection in preparations to 
   //graphics pipeline processes before fragment shader (clipping)
-  gl_Position = MVP * vec4(VertexPosition,1.0); 
+  gl_Position = MVP * RotationMatrix * vec4(VertexPosition,1.0); 
 } 
