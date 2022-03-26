@@ -1,10 +1,9 @@
 // Precompiled Header
 #pragma once
 
-// Don't include everything
-#define WIN32_LEAN_AND_MEAN
-
+#define WIN32_LEAN_AND_MEAN // Don't include everything
 #include <Windows.h>
+
 #include <assert.h>
 #include <fstream>
 #include <sstream>
@@ -17,6 +16,10 @@
 #include <tuple>
 #include <array>
 
+// GL includes
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+// Custom logger
+#include "log.h"
