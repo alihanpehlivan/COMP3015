@@ -33,5 +33,5 @@ public:
     virtual void UpdateViewMatrix(glm::mat4 viewMatrix) = 0;
     virtual void UpdateProjMatrix(glm::mat4 projMatrix) = 0;
     virtual void ToggleBlinnPhong() = 0;
-    bool isBlinnPhong = false;
+    bool isBlinnPhong = true;
 };

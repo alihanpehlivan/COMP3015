@@ -28,7 +28,7 @@ bool SceneBasic_Uniform::initScene()
     projection = glm::mat4(1.0f);
 
     // Light position
-    prog.setUniform("Light.Position", view * glm::vec4(1.0f, 1.2f, 3.0f, 1.0f));
+    prog.setUniform("LightPosition", view * glm::vec4(1.0f, 1.2f, 3.0f, 1.0f));
 
     // Diffuse light intensity
     prog.setUniform("Light.Ld", glm::vec3(1.0f, 1.0f, 1.0f));
