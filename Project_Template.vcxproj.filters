@@ -79,6 +79,12 @@
     <ClCompile Include="src\helper\camera.cpp">
       <Filter>helper</Filter>
     </ClCompile>
+    <ClCompile Include="src\helper\objmesh.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\plane.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\basic_uniform.frag">
@@ -163,6 +169,18 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\helper\camera.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\aabb.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\objmesh.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\plane.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\utils.h">
       <Filter>helper</Filter>
     </ClInclude>
   </ItemGroup>

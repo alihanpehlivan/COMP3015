@@ -37,7 +37,7 @@ public:
     bool animating() { return m_animate; }
     
 protected:
-	bool m_animate = true;
+    bool m_animate = false;
     float _radians = 0.f;
 
 };

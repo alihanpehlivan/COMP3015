@@ -6,7 +6,12 @@
 static ImVec4 s_ClearColor = ImVec4(25 / 255.0f, 25 / 255.0f, 25 / 255.0f, 1.00f);
 
 //constructor for torus
-SceneBasic_Uniform::SceneBasic_Uniform() : torus(0.7f, 0.3f, 50, 50) {}
+SceneBasic_Uniform::SceneBasic_Uniform() :
+    plane(10.0f, 10.0f, 100, 100),
+    torus(0.7f, 0.3f, 50, 50)
+{
+    mesh = ObjMesh::load("media/pig_triangulated.obj", true);
+}
 
 //constructor for teapot
 //SceneBasic_Uniform::SceneBasic_Uniform() : teapot(13, glm::translate(mat4(1.0f), vec3(0.0f, 1.5f, 0.25f))) {}
@@ -18,25 +23,30 @@ bool SceneBasic_Uniform::initScene()
 
 	glEnable(GL_DEPTH_TEST);
 
-    //initialise the model matrix
-    model = glm::mat4(1.0f);
-    
-    //enable this group for torus rendering, make sure you comment the teapot group
-    model = glm::rotate(model, glm::radians(-35.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //rotate model on x axis
-    model = glm::rotate(model, glm::radians(15.0f), glm::vec3(0.0f, 1.0f, 0.0f));  //rotate model on y axis
-    view = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //sets the view - read in the documentation about glm::lookAt. if still have questions,come an dtalk to me
-
-    //enable this group for teapot rendering, make sure you comment the torus group
-    //model = glm::translate(model, vec3(0.0, -1.0, 0.0));
-    //model = glm::rotate(model, glm::radians(-90.0f), vec3(1.0f, 0.0f, 0.0f));
-    //view = glm::lookAt(vec3(2.0f, 4.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
-
+    view = glm::lookAt(glm::vec3(0.5f, 0.75f, 0.75f), glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f));
     projection = glm::mat4(1.0f);
 
-    //make sure you use the correct name, check your vertex shader
-    prog.setUniform("Material.Kd", 0.2f, 0.55f, 0.9f); //seting the Kd uniform
-    prog.setUniform("Light.Ld", 1.0f, 1.0f, 1.0f);     //setting the Ld uniform
-    prog.setUniform("Light.Position", view * glm::vec4(5.0f, 5.0f, 2.0f, 0.0f)); //setting Light Position
+    float x, z;
+    for (int i = 0; i < 3; i++)
+    {
+        std::stringstream name;
+        name << "lights[" << i << "].Position";
+        x = 2.0f * cosf((glm::two_pi<float>() / 3) * i);
+        z = 2.0f * sinf((glm::two_pi<float>() / 3) * i);
+        prog.setUniform(name.str().c_str(), view * glm::vec4(x, 1.2f, z +
+            1.0f, 1.0f));
+    }
+
+    // Diffuse and specular light intensity
+    prog.setUniform("lights[0].L", glm::vec3(0.0f, 0.0f, 1.0f));
+    prog.setUniform("lights[1].L", glm::vec3(0.0f, 1.0f, 0.0f));
+    prog.setUniform("lights[2].L", glm::vec3(1.0f, 0.0f, 0.0f));
+
+    // Ambient light intensity
+    prog.setUniform("lights[0].La", glm::vec3(0.3f, 0.3f, 0.3f));
+    prog.setUniform("lights[1].La", glm::vec3(0.3f, 0.3f, 0.3f));
+    prog.setUniform("lights[2].La", glm::vec3(0.3f, 0.3f, 0.3f));
 
     return true;
 }
@@ -104,9 +114,27 @@ void SceneBasic_Uniform::render()
     glClearColor(s_ClearColor.x, s_ClearColor.y, s_ClearColor.z, s_ClearColor.w);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    setMatrices();  // we set matrices 
-    torus.render(); // we render the torus
-    //teapot.render();
+    prog.setUniform("Material.Kd", 0.4f, 0.4f, 0.4f);
+    prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
+    prog.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
+    prog.setUniform("Material.Shininess", 180.0f);
+    model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    setMatrices();
+    mesh->render();
+
+
+    prog.setUniform("Material.Kd", 0.1f, 0.1f, 0.1f);
+    prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
+    prog.setUniform("Material.Ka", 0.1f, 0.1f, 0.1f);
+    prog.setUniform("Material.Shininess", 180.0f);
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, -0.45f, 0.0f));
+    setMatrices();
+    plane.render();
+
+
+
 
     // ImGui renders on top of everything
     ImGui_Render();
@@ -114,8 +142,6 @@ void SceneBasic_Uniform::render()
 
 void SceneBasic_Uniform::setMatrices()
 {
-    model = glm::rotate(glm::mat4(1.0f), _radians, glm::vec3(0.0f, 1.0f, 0.0f));  //rotate model on y axis
-
     glm::mat4 mv = view * model; //we create a model view matrix
     
     prog.setUniform("ModelViewMatrix", mv); //set the uniform for the model view matrix
