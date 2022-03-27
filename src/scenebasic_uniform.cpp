@@ -27,26 +27,15 @@ bool SceneBasic_Uniform::initScene()
         glm::vec3(0.0f, 1.0f, 0.0f));
     projection = glm::mat4(1.0f);
 
-    float x, z;
-    for (int i = 0; i < 3; i++)
-    {
-        std::stringstream name;
-        name << "lights[" << i << "].Position";
-        x = 2.0f * cosf((glm::two_pi<float>() / 3) * i);
-        z = 2.0f * sinf((glm::two_pi<float>() / 3) * i);
-        prog.setUniform(name.str().c_str(), view * glm::vec4(x, 1.2f, z +
-            1.0f, 1.0f));
-    }
+    // Light position
+    prog.setUniform("Light.Position", view * glm::vec4(1.0f, 1.2f, 3.0f, 1.0f));
 
-    // Diffuse and specular light intensity
-    prog.setUniform("lights[0].L", glm::vec3(0.0f, 0.0f, 1.0f));
-    prog.setUniform("lights[1].L", glm::vec3(0.0f, 1.0f, 0.0f));
-    prog.setUniform("lights[2].L", glm::vec3(1.0f, 0.0f, 0.0f));
-
+    // Diffuse light intensity
+    prog.setUniform("Light.Ld", glm::vec3(1.0f, 1.0f, 1.0f));
+    // Specular light intensity
+    prog.setUniform("Light.Ls", glm::vec3(1.0f, 1.0f, 1.0f));
     // Ambient light intensity
-    prog.setUniform("lights[0].La", glm::vec3(0.3f, 0.3f, 0.3f));
-    prog.setUniform("lights[1].La", glm::vec3(0.3f, 0.3f, 0.3f));
-    prog.setUniform("lights[2].La", glm::vec3(0.3f, 0.3f, 0.3f));
+    prog.setUniform("Light.La", glm::vec3(1.0f, 1.0f, 1.0f));
 
     return true;
 }
