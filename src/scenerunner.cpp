@@ -216,7 +216,7 @@ void SceneRunner::OnPressKey(int key, int scancode, int action, int mods)
             _camera->ProcessKeyboard(Camera::RIGHT, _deltaTime);
         break;
     case GLFW_KEY_SPACE:
-        if (action == GLFW_PRESS)_scene->animate(!_scene->animating());
+        if (action == GLFW_PRESS) _scene->ToggleBlinnPhong();
         break;
     case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(_window, 1);

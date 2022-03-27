@@ -172,8 +172,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="shader\basic_uniform.frag" />
-    <None Include="shader\basic_uniform.vert" />
+    <None Include="shader\01_PerFrag_BlinngPhong.frag" />
+    <None Include="shader\01_PerFrag_BlinngPhong.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h" />

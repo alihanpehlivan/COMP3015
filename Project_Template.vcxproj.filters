@@ -87,13 +87,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\basic_uniform.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform.vert">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="packages.config" />
+    <None Include="shader\01_PerFrag_BlinngPhong.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shader\01_PerFrag_BlinngPhong.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">

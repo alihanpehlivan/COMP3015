@@ -44,8 +44,8 @@ bool SceneBasic_Uniform::compile()
 {
 	try
     {
-		prog.compileShader("shader/basic_uniform.vert");
-		prog.compileShader("shader/basic_uniform.frag");
+		prog.compileShader("shader/01_PerFrag_BlinngPhong.vert");
+		prog.compileShader("shader/01_PerFrag_BlinngPhong.frag");
 		prog.link();
 		prog.use();
 	}
@@ -92,10 +92,6 @@ static void ImGui_Render()
 
 void SceneBasic_Uniform::update(float t)
 {
-    if (m_animate)
-    {
-        _radians = std::max<float>(90.f, _radians + 0.08f);
-    }
 }
 
 void SceneBasic_Uniform::render()
@@ -156,4 +152,11 @@ void SceneBasic_Uniform::UpdateViewMatrix(glm::mat4 viewMatrix)
 void SceneBasic_Uniform::UpdateProjMatrix(glm::mat4 projMatrix)
 {
     projection = projMatrix;
+}
+
+void SceneBasic_Uniform::ToggleBlinnPhong()
+{
+    isBlinnPhong = !isBlinnPhong;
+    LOG_INFO("Use Blinn Phong: {}", isBlinnPhong);
+    prog.setUniform("UseBlinnPhong", isBlinnPhong);
 }

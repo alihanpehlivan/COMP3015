@@ -30,4 +30,5 @@ public:
 
     void UpdateViewMatrix(glm::mat4 viewMatrix) override;
     void UpdateProjMatrix(glm::mat4 projMatrix) override;
+    void ToggleBlinnPhong();
 };
