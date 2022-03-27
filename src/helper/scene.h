@@ -1,5 +1,7 @@
 #pragma once
 
+class Camera;
+
 class Scene
 {
 protected:
@@ -22,16 +24,14 @@ public:
     virtual bool initScene() = 0;
 
     // This is called prior to every frame.  Use this to update your animation.
-    virtual void update( float t ) = 0;
+    virtual void update( Camera* camera, float t ) = 0;
 
     // Draw your scene.
     virtual void render() = 0;
     
     // Called when screen is resized
     virtual void resize(int, int) = 0;
-    
-    virtual void UpdateViewMatrix(glm::mat4 viewMatrix) = 0;
-    virtual void UpdateProjMatrix(glm::mat4 projMatrix) = 0;
+
     virtual void ToggleBlinnPhong() = 0;
     bool isBlinnPhong = true;
 };

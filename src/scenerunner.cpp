@@ -47,6 +47,9 @@ bool SceneRunner::init(const std::string& title, int width, int height, int samp
     // Create the window
     _window = glfwCreateWindow(_width, _height, title.c_str(), NULL, NULL);
 
+    // Set center the window
+    glfwSetWindowMonitor(_window, NULL, (GetSystemMetrics(SM_CXSCREEN) / 2) - (width / 2), (GetSystemMetrics(SM_CYSCREEN) / 2) - (height / 2), width, height, GLFW_DONT_CARE);
+
     if (!_window)
     {
         LOG_CRITICAL("Unable to create OpenGL context.");
@@ -179,11 +182,7 @@ void SceneRunner::loop()
         _deltaTime = currentFrame - _lastFrame;
         _lastFrame = currentFrame;
 
-        _scene->update(currentFrame);
-
-        _scene->UpdateViewMatrix(_camera->GetViewMatrix());
-        _scene->UpdateProjMatrix(glm::perspective(glm::radians(_camera->Zoom), (float)_width / (float)_height, 0.1f, 100.0f));
-
+        _scene->update(_camera, currentFrame);
         _scene->render();
 
         glfwSwapBuffers(_window);
