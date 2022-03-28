@@ -39,7 +39,7 @@ uniform bool UseTextureMix = true;
 uniform bool UseToon = false;
 uniform float ToonFraction = 1.0f;
 
-void phongModelHalfVector(vec3 normal, out vec3 outColor, out vec3 outSpec)
+void phongModelHalfVector( vec3 normal, out vec3 outColor, out vec3 outSpec, out float specIntensity )
 {
     // (H) calculate the half vector between the light vector and the view vector
 	vec3 halfDir = normalize( ViewDir + LightDir );
@@ -48,20 +48,20 @@ void phongModelHalfVector(vec3 normal, out vec3 outColor, out vec3 outSpec)
 	vec3 ambient = Light.La * Material.Ka;
 
     // Is the pixel lit?
-	float specAngle = max( dot( LightDir, normal ), 0.0 ); // I wish OpenGL had saturate(); function
+	specIntensity = max( dot( LightDir, normal ), 0.0 ); // I wish OpenGL had saturate(); function
 
     // With diffuse light intensity
-	vec3 diffuse = Light.Ld * specAngle;
+	vec3 diffuse = Light.Ld * specIntensity;
 
     // If the vertex is lit, compute the specular color
 	// Note that we create dot product of halfDir & normals
-	if( specAngle > 0.0 )
+	if( specIntensity > 0.0 )
 		outSpec = Light.Ls * Material.Ks * pow( max( dot( halfDir , normal ), 0.0 ), Material.Shininess );
 
     outColor = ambient + diffuse;
 }
 
-void phongModel( vec3 normal, out vec3 outColor, out vec3 outSpec )
+void phongModel( vec3 normal, out vec3 outColor, out vec3 outSpec, out float specIntensity )
 {
     // (R) Reflection direction
     vec3 reflectDir = reflect( -LightDir, normal );
@@ -70,13 +70,13 @@ void phongModel( vec3 normal, out vec3 outColor, out vec3 outSpec )
     vec3 ambient = Light.La * Material.Ka;
 
     // Is the pixel lit?
-    float specAngle = max( dot(LightDir, normal), 0.0 );
+    specIntensity = max( dot(LightDir, normal), 0.0 );
 
     // With diffuse light intensity
-    vec3 diffuse = Light.Ld * specAngle;
+    vec3 diffuse = Light.Ld * specIntensity;
 
     // If the vertex is lit, compute the specular color
-    if( specAngle > 0.0 )
+    if( specIntensity > 0.0 )
         outSpec = Light.Ls * Material.Ks * pow( max( dot(reflectDir, ViewDir), 0.0 ), Material.Shininess );
 
     outColor = ambient + diffuse;
@@ -92,12 +92,13 @@ void main()
     vec4 tex2Color = texture( AdditionalColorTex, TexCoord );
 
     vec3 outColor, outSpec;
+    float outSpecIntensity;
 
     // Pick phong model
     if(UseBlinnPhong)
-        phongModelHalfVector(normal.xyz, outColor, outSpec);
+        phongModelHalfVector(normal.xyz, outColor, outSpec, outSpecIntensity);
     else
-        phongModel(normal.xyz, outColor, outSpec);
+        phongModel(normal.xyz, outColor, outSpec, outSpecIntensity);
 
     // Pick texture method
     if(UseTextures)
@@ -121,13 +122,12 @@ void main()
     if (UseToon)
     {
         vec4 outToonColor;
-        float intensity = max(0.0, dot(LightDir, normal.xyz));
         
-        if (intensity > pow(0.95, ToonFraction))
+        if (outSpecIntensity > pow(0.95, ToonFraction))
           outToonColor = vec4(vec3(1.0), 1.0);
-        else if (intensity > pow(0.5, ToonFraction))
+        else if (outSpecIntensity > pow(0.5, ToonFraction))
           outToonColor = vec4(vec3(0.6), 1.0);
-        else if (intensity > pow(0.25, ToonFraction))
+        else if (outSpecIntensity > pow(0.25, ToonFraction))
           outToonColor = vec4(vec3(0.4), 1.0);
         else
           outToonColor = vec4(vec3(0.2), 1.0);
