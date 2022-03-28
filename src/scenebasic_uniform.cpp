@@ -12,6 +12,7 @@ namespace Configs
     // Scene & shader settings
     static ImVec4 bgColor = ImVec4(25 / 255.0f, 25 / 255.0f, 25 / 255.0f, 1.00f);
     static bool useBlinnPhong = true;
+    static bool useTextures = true;
     static bool useTextureMix = true;
 
     static bool animateLight = true;
@@ -107,7 +108,15 @@ static void ImGui_Render()
     ImGui::Separator();
     ImGui::Text("Shader Settings:");
     ImGui::Checkbox("Use Blinn Phong", &Configs::useBlinnPhong);
-    ImGui::Checkbox("Use Texture Mix", &Configs::useTextureMix);
+    ImGui::Checkbox("Enable Textures", &Configs::useTextures);
+
+    ImGui::BeginDisabled(!Configs::useTextures);
+
+    if (!Configs::useTextures)
+        Configs::useTextureMix = false;
+
+    ImGui::Checkbox("Enable Texture Mix", &Configs::useTextureMix);
+    ImGui::EndDisabled();
 
     // ----
     ImGui::Separator();
@@ -162,6 +171,7 @@ void SceneBasic_Uniform::update(Camera* camera, float t)
 
     // Update settings in case if they are changed
     prog.setUniform("UseBlinnPhong", Configs::useBlinnPhong);
+    prog.setUniform("UseTextures", Configs::useTextures);
     prog.setUniform("UseTextureMix", Configs::useTextureMix);
 
     prog.setUniform("Light.Position", Configs::lightPos);

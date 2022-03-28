@@ -33,6 +33,7 @@ uniform MaterialInfo Material;
 
 // User-specified properties
 uniform bool UseBlinnPhong = true;
+uniform bool UseTextures = true;
 uniform bool UseTextureMix = true;
 
 void phongModelHalfVector(vec3 normal, out vec3 outColor, out vec3 outSpec)
@@ -96,13 +97,20 @@ void main()
         phongModel(normal.xyz, outColor, outSpec);
 
     // Pick texture method
-    if(UseTextureMix)
+    if(UseTextures)
     {
-        vec4 mixedTexColor = mix(tex0Color, tex2Color, tex2Color.a);
-        FragColor = vec4(outColor, 1.0 ) * mixedTexColor + vec4( outSpec, 1 );
+        if(UseTextureMix)
+        {
+            vec4 mixedTexColor = mix(tex0Color, tex2Color, tex2Color.a);
+            FragColor = vec4(outColor, 1.0 ) * mixedTexColor + vec4( outSpec, 1 );
+        }
+        else
+        {
+            FragColor = vec4(outColor, 1.0 ) * tex0Color + vec4( outSpec, 1 );
+        }
     }
     else
     {
-        FragColor = vec4(outColor, 1.0 ) * tex0Color + vec4( outSpec, 1 );
+        FragColor = vec4(outColor, 1.0 ) + vec4( outSpec, 1 );
     }
 }
