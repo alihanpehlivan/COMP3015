@@ -15,6 +15,9 @@ namespace Configs
     static bool useTextures = true;
     static bool useTextureMix = true;
 
+    static bool useToon = false;
+    static float toonFraction = 1.0f;
+
     static bool animateLight = true;
     static glm::vec4 lightPos = { 0.f, 0.f, 0.f, 0.f }; // Light position
     static glm::vec3 lightLd = { 0.9f, 0.9f, 0.9f }; // Diffuse light intensity
@@ -120,6 +123,12 @@ static void ImGui_Render()
 
     // ----
     ImGui::Separator();
+    ImGui::Text("Toon Settings:");
+    ImGui::Checkbox("Enable Toon Shading", &Configs::useToon);
+    ImGui::DragFloat("Toon Fraction", &Configs::toonFraction, 0.01, 0.0, 1.0);
+
+    // ----
+    ImGui::Separator();
     ImGui::Text("Light & Mat Settings:");
     ImGui::Checkbox("Animate Light", &Configs::animateLight);
 
@@ -132,7 +141,7 @@ static void ImGui_Render()
     ImGui::Spacing();
     ImGui::ColorEdit3("Mat.Ka", (float*)&Configs::matKa);
     ImGui::ColorEdit3("Mat.Ks", (float*)&Configs::matKs);
-    ImGui::ColorEdit3("Mat.Shininess", (float*)&Configs::matShininess);
+    ImGui::DragFloat("Mat.Shininess", &Configs::matShininess, 0.01, 0.0, 1.0);
 
     // ----
     ImGui::Separator();
@@ -173,6 +182,9 @@ void SceneBasic_Uniform::update(Camera* camera, float t)
     prog.setUniform("UseBlinnPhong", Configs::useBlinnPhong);
     prog.setUniform("UseTextures", Configs::useTextures);
     prog.setUniform("UseTextureMix", Configs::useTextureMix);
+
+    prog.setUniform("UseToon", Configs::useToon);
+    prog.setUniform("ToonFraction", Configs::toonFraction);
 
     prog.setUniform("Light.Position", Configs::lightPos);
 

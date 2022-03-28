@@ -36,6 +36,9 @@ uniform bool UseBlinnPhong = true;
 uniform bool UseTextures = true;
 uniform bool UseTextureMix = true;
 
+uniform bool UseToon = false;
+uniform float ToonFraction = 1.0f;
+
 void phongModelHalfVector(vec3 normal, out vec3 outColor, out vec3 outSpec)
 {
     // (H) calculate the half vector between the light vector and the view vector
@@ -113,4 +116,24 @@ void main()
     {
         FragColor = vec4(outColor, 1.0 ) + vec4( outSpec, 1 );
     }
+
+    // Apply toon shading if enabled
+    if (UseToon)
+    {
+        vec4 outToonColor;
+        float intensity = max(0.0, dot(LightDir, normal.xyz));
+        
+        if (intensity > pow(0.95, ToonFraction))
+          outToonColor = vec4(vec3(1.0), 1.0);
+        else if (intensity > pow(0.5, ToonFraction))
+          outToonColor = vec4(vec3(0.6), 1.0);
+        else if (intensity > pow(0.25, ToonFraction))
+          outToonColor = vec4(vec3(0.4), 1.0);
+        else
+          outToonColor = vec4(vec3(0.2), 1.0);
+        
+        FragColor = outToonColor * FragColor;
+    }
 }
+
+
