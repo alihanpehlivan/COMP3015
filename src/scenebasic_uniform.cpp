@@ -22,6 +22,8 @@ static GLuint texNormalMap;
 static GLuint texOgreDiffuseMap;
 static GLuint texOgreNormalMap;
 
+static GLuint texMoss;
+
 bool SceneBasic_Uniform::initScene()
 {
     if (!compile())
@@ -46,6 +48,8 @@ bool SceneBasic_Uniform::initScene()
     texOgreDiffuseMap = Texture::loadTexture("media/texture/ogre_diffuse.png");
     texOgreNormalMap = Texture::loadTexture("media/texture/ogre_normalmap.png");
     
+    texMoss = Texture::loadTexture("media/texture/moss.png");
+
     return true;
 }
 
@@ -129,6 +133,8 @@ void SceneBasic_Uniform::render()
     glBindTexture(GL_TEXTURE_2D, texDiffuseMap);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texNormalMap);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, texMoss);
 
     prog.setUniform("Light.Position", view * glm::vec4(10.0f * cos(angle), 1.0f, 10.0f * sin(angle), 1.0f));
     prog.setUniform("Material.Ks", 0.2f, 0.2f, 0.2f);
