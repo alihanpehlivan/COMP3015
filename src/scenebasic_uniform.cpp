@@ -9,20 +9,24 @@
 
 static ImVec4 s_ClearColor = ImVec4(25 / 255.0f, 25 / 255.0f, 25 / 255.0f, 1.00f);
 
-//constructor for torus
 SceneBasic_Uniform::SceneBasic_Uniform() :
     plane(30.0f, 30.0f, 100, 100, 5, 5)
 {
     mesh = ObjMesh::load("media/bs_ears.obj", false, true);
 }
 
-static GLuint texDiffuseMap;
-static GLuint texNormalMap;
+// TODO: Make a texture holder singleton class instance for easy access.
+enum ETextures
+{
+    TEX_DIFFUSE_MAP,  // For plane
+    TEX_NORMAL_MAP,
+    TEX_OGRE_DIFFUSE_MAP, // For ogre heade
+    TEX_OGRE_NORMAL_MAP,
+    TEX_MOSS,  // For texture mix test
+    TEX_MAX_NUM,
+};
 
-static GLuint texOgreDiffuseMap;
-static GLuint texOgreNormalMap;
-
-static GLuint texMoss;
+static std::array<GLuint, TEX_MAX_NUM> textureArray;
 
 bool SceneBasic_Uniform::initScene()
 {
@@ -42,13 +46,13 @@ bool SceneBasic_Uniform::initScene()
     // Ambient light intensity
     prog.setUniform("Light.La", glm::vec3(0.9f, 0.9f, 0.9f));
 
-    texDiffuseMap = Texture::loadTexture("media/texture/Brick_Wall_017_basecolor.jpg");
-    texNormalMap = Texture::loadTexture("media/texture/Brick_Wall_017_normal.jpg");
-    
-    texOgreDiffuseMap = Texture::loadTexture("media/texture/ogre_diffuse.png");
-    texOgreNormalMap = Texture::loadTexture("media/texture/ogre_normalmap.png");
-    
-    texMoss = Texture::loadTexture("media/texture/moss.png");
+    textureArray[TEX_DIFFUSE_MAP] = Texture::loadTexture("media/texture/Brick_Wall_017_basecolor.jpg");
+    textureArray[TEX_NORMAL_MAP] = Texture::loadTexture("media/texture/Brick_Wall_017_normal.jpg");
+
+    textureArray[TEX_OGRE_DIFFUSE_MAP] = Texture::loadTexture("media/texture/ogre_diffuse.png");
+    textureArray[TEX_OGRE_NORMAL_MAP] = Texture::loadTexture("media/texture/ogre_normalmap.png");
+
+    textureArray[TEX_MOSS] = Texture::loadTexture("media/texture/moss.png");
 
     return true;
 }
@@ -59,6 +63,7 @@ bool SceneBasic_Uniform::compile()
     {
 		prog.compileShader("shader/02_Textured.vert");
 		prog.compileShader("shader/02_Textured.frag");
+		//prog.compileShader("shader/02_Textured.geom");
 		prog.link();
 		prog.use();
 	}
@@ -130,11 +135,11 @@ void SceneBasic_Uniform::render()
 
     // Render Plane
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texDiffuseMap);
+    glBindTexture(GL_TEXTURE_2D, textureArray[TEX_DIFFUSE_MAP]);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texNormalMap);
+    glBindTexture(GL_TEXTURE_2D, textureArray[TEX_NORMAL_MAP]);
     glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, texMoss);
+    glBindTexture(GL_TEXTURE_2D, textureArray[TEX_MOSS]);
 
     prog.setUniform("Light.Position", view * glm::vec4(10.0f * cos(angle), 1.0f, 10.0f * sin(angle), 1.0f));
     prog.setUniform("Material.Ks", 0.2f, 0.2f, 0.2f);
@@ -147,9 +152,9 @@ void SceneBasic_Uniform::render()
 
     // Render the Mesh
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texOgreDiffuseMap);
+    glBindTexture(GL_TEXTURE_2D, textureArray[TEX_OGRE_DIFFUSE_MAP]);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texOgreNormalMap);
+    glBindTexture(GL_TEXTURE_2D, textureArray[TEX_OGRE_NORMAL_MAP]);
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
@@ -164,11 +169,9 @@ void SceneBasic_Uniform::setMatrices()
 {
     glm::mat4 mv = view * model; //we create a model view matrix
     
-    prog.setUniform("ModelViewMatrix", mv); //set the uniform for the model view matrix
-    
-    prog.setUniform("NormalMatrix", glm::mat3(glm::vec3(mv[0]), glm::vec3(mv[1]), glm::vec3(mv[2]))); //we set the uniform for normal matrix
-    
-    prog.setUniform("MVP", projection * mv); //we set the model view matrix by multiplying the mv with the projection matrix
+    prog.setUniform("ModelViewMatrix", mv);
+    prog.setUniform("NormalMatrix", glm::mat3(glm::vec3(mv[0]), glm::vec3(mv[1]), glm::vec3(mv[2])));
+    prog.setUniform("MVP", projection * mv);
 }
 
 void SceneBasic_Uniform::resize(int w, int h)

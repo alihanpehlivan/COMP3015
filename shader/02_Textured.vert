@@ -17,8 +17,8 @@ struct LightInfo
 uniform LightInfo Light;
 
 out vec3 LightDir;
-out vec2 TexCoord;
 out vec3 ViewDir;
+out vec2 TexCoord;
 
 uniform mat4 ModelViewMatrix;
 uniform mat3 NormalMatrix;
@@ -38,7 +38,7 @@ void main()
     mat3 toObjectLocal = mat3(
         tang.x, binormal.x, norm.x,
         tang.y, binormal.y, norm.y,
-        tang.z, binormal.z, norm.z ) ;
+        tang.z, binormal.z, norm.z);
 
     // Transform light direction and view direction to tangent space
     vec3 pos = vec3( ModelViewMatrix * vec4(VertexPosition,1.0) );

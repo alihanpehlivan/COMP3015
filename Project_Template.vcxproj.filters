@@ -112,6 +112,9 @@
     <None Include="shader\02_Textured.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shader\02_Textured.geom">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">

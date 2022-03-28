@@ -194,6 +194,7 @@
     <None Include="shader\01_PerFrag_BlinngPhong.frag" />
     <None Include="shader\01_PerFrag_BlinngPhong.vert" />
     <None Include="shader\02_Textured.frag" />
+    <None Include="shader\02_Textured.geom" />
     <None Include="shader\02_Textured.vert" />
   </ItemGroup>
   <ItemGroup>

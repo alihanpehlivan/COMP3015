@@ -1,5 +1,7 @@
 #version 460
 
+// Light & view dir calculated in vertex shader for normal maps
+// In addition we will use these in phong model so we can optimize our model further
 in vec3 LightDir;
 in vec3 ViewDir;
 in vec2 TexCoord;
@@ -29,36 +31,11 @@ struct MaterialInfo
 
 uniform MaterialInfo Material;
 
-// Settings
+// User-specified properties
 uniform bool UseBlinnPhong = true;
+uniform bool UseTextureMix = true;
 
-// Blinn-Phong Model
-vec3 phongModelHalfVector(vec3 normal, vec3 texColor)
-{
-    // (H) calculate the half vector between the light vector and the view vector
-	vec3 halfDir = normalize( ViewDir + LightDir );
-
-    // With ambient light intensity
-	vec3 ambient = Light.La * Material.Ka;
-
-    // Is the pixel lit?
-	float specAngle = max( dot( LightDir, normal ), 0.0 ); // I wish OpenGL had saturate(); function
-
-    // With diffuse light intensity
-	vec3 diffuse = Light.Ld * specAngle;
-
-	vec3 spec = vec3(0.0);
-
-    // If the vertex is lit, compute the specular color
-	// Note that we create dot product of halfDir & normals
-	if( specAngle > 0.0 )
-		spec = Light.Ls * Material.Ks * pow( max( dot( halfDir , normal ), 0.0 ), Material.Shininess );
-
-    // Final pixel color with tex color
-    return (ambient + diffuse) * texColor + spec;
-}
-
-void phongModelHalfVectorMultiTex(vec3 normal, out vec3 ambAndDiff, out vec3 spec)
+void phongModelHalfVector(vec3 normal, out vec3 outColor, out vec3 outSpec)
 {
     // (H) calculate the half vector between the light vector and the view vector
 	vec3 halfDir = normalize( ViewDir + LightDir );
@@ -75,12 +52,12 @@ void phongModelHalfVectorMultiTex(vec3 normal, out vec3 ambAndDiff, out vec3 spe
     // If the vertex is lit, compute the specular color
 	// Note that we create dot product of halfDir & normals
 	if( specAngle > 0.0 )
-		spec = Light.Ls * Material.Ks * pow( max( dot( halfDir , normal ), 0.0 ), Material.Shininess );
+		outSpec = Light.Ls * Material.Ks * pow( max( dot( halfDir , normal ), 0.0 ), Material.Shininess );
 
-    ambAndDiff = ambient + diffuse;
+    outColor = ambient + diffuse;
 }
 
-vec3 phongModel( vec3 normal, vec3 texColor )
+void phongModel( vec3 normal, out vec3 outColor, out vec3 outSpec )
 {
     // (R) Reflection direction
     vec3 reflectDir = reflect( -LightDir, normal );
@@ -94,13 +71,11 @@ vec3 phongModel( vec3 normal, vec3 texColor )
     // With diffuse light intensity
     vec3 diffuse = Light.Ld * specAngle;
 
-    vec3 spec = vec3(0.0);
-
     // If the vertex is lit, compute the specular color
     if( specAngle > 0.0 )
-        spec = Light.Ls * Material.Ks * pow( max( dot(reflectDir, ViewDir), 0.0 ), Material.Shininess );
+        outSpec = Light.Ls * Material.Ks * pow( max( dot(reflectDir, ViewDir), 0.0 ), Material.Shininess );
 
-    return (ambient + diffuse) * texColor + spec;
+    outColor = ambient + diffuse;
 }
 
 void main()
@@ -112,17 +87,22 @@ void main()
     vec4 tex0Color = texture( ColorTex, TexCoord );
     vec4 tex2Color = texture( AdditionalColorTex, TexCoord );
 
-    vec3 ambAndDiff, spec;
+    vec3 outColor, outSpec;
 
+    // Pick phong model
     if(UseBlinnPhong)
-    {
-        phongModelHalfVectorMultiTex(normal.xyz, ambAndDiff, spec);
+        phongModelHalfVector(normal.xyz, outColor, outSpec);
+    else
+        phongModel(normal.xyz, outColor, outSpec);
 
+    // Pick texture method
+    if(UseTextureMix)
+    {
         vec4 mixedTexColor = mix(tex0Color, tex2Color, tex2Color.a);
-        FragColor = vec4(ambAndDiff, 1.0 ) * mixedTexColor + vec4( spec, 1 );
+        FragColor = vec4(outColor, 1.0 ) * mixedTexColor + vec4( outSpec, 1 );
     }
     else
     {
-        FragColor = vec4( phongModel(normal.xyz, tex0Color.rgb), 1.0 );
+        FragColor = vec4(outColor, 1.0 ) + vec4( outSpec, 1 );
     }
 }
