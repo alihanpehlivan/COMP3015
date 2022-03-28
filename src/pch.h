@@ -16,8 +16,13 @@
 #include <tuple>
 #include <array>
 
-// GL includes
+// GL Loader-Generator
 #include <glad/glad.h>
+
+// GLFW
+#include <GLFW/glfw3.h>
+
+// GL Math
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 

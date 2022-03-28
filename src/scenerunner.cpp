@@ -2,12 +2,20 @@
 #include "scenerunner.h"
 #include "helper/camera.h"
 #include "helper/scene.h"
-#include <GLFW/glfw3.h>
 
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_glfw.h"
 #include "../imgui/imgui_impl_opengl3.h"
 #include "../imgui/imgui_stdlib.h"
+
+namespace Configs
+{
+    static float lastX = 1024 / 2.0f;
+    static float lastY = 768 / 2.0f;
+
+    static bool firstMouse = true;
+    static bool useMouseCameraMove = true;
+};
 
 SceneRunner::SceneRunner()
 {
@@ -192,6 +200,8 @@ void SceneRunner::loop()
 
 void SceneRunner::OnPressKey(int key, int scancode, int action, int mods)
 {
+    using namespace Configs;
+
     assert(_window != nullptr);
     assert(_camera != nullptr);
     //LOG_INFO("EVENT: press key {} => {} {} {}", key, action, scancode, mods);
@@ -215,23 +225,38 @@ void SceneRunner::OnPressKey(int key, int scancode, int action, int mods)
             _camera->ProcessKeyboard(Camera::RIGHT, _deltaTime);
         break;
     case GLFW_KEY_SPACE:
-        if (action == GLFW_PRESS) _scene->ToggleBlinnPhong();
+        if (action == GLFW_PRESS)
+            useMouseCameraMove = !useMouseCameraMove;
         break;
     case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(_window, 1);
         break;
     default:
+        _scene->processKey(key, scancode, action, mods);
         break;
     }
 }
 
-float lastX = 1024 / 2.0f;
-float lastY = 768 / 2.0f;
-
 void SceneRunner::OnMouseMove(double x, double y)
 {
+    using namespace Configs;
     assert(_camera != nullptr);
     //LOG_INFO("EVENT: mouse move {}, {}", x, y);
+
+    if (!useMouseCameraMove)
+    {
+        lastX = 1024 / 2.0f;
+        lastY = 768 / 2.0f;
+        firstMouse = true;
+        return;
+    }
+
+    if (firstMouse)
+    {
+        lastX = x;
+        lastY = y;
+        firstMouse = false;
+    }
 
     float xpos = static_cast<float>(x);
     float ypos = static_cast<float>(y);

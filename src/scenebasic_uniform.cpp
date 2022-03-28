@@ -7,7 +7,23 @@
 #include "../imgui/imgui_impl_opengl3.h"
 #include "../imgui/imgui_impl_glfw.h"
 
-static ImVec4 s_ClearColor = ImVec4(25 / 255.0f, 25 / 255.0f, 25 / 255.0f, 1.00f);
+namespace Configs
+{
+    // Scene & shader settings
+    static ImVec4 bgColor = ImVec4(25 / 255.0f, 25 / 255.0f, 25 / 255.0f, 1.00f);
+    static bool useBlinnPhong = true;
+    static bool useTextureMix = true;
+
+    static bool animateLight = true;
+    static glm::vec4 lightPos = { 0.f, 0.f, 0.f, 0.f }; // Light position
+    static glm::vec3 lightLd = { 0.9f, 0.9f, 0.9f }; // Diffuse light intensity
+    static glm::vec3 lightLs = { 0.9f, 0.9f, 0.9f }; // Specular light intensity
+    static glm::vec3 lightLa = { 0.9f, 0.9f, 0.9f }; // Ambient light intensity
+
+    static glm::vec3 matKa = { 0.1f, 0.1f, 0.1f }; // Ambient reflectivity
+    static glm::vec3 matKs = { 0.2f, 0.2f, 0.2f }; // Specular reflectivity
+    static float matShininess = 1.0f; // Specular shininess factor
+};
 
 SceneBasic_Uniform::SceneBasic_Uniform() :
     plane(30.0f, 30.0f, 100, 100, 5, 5)
@@ -38,13 +54,6 @@ bool SceneBasic_Uniform::initScene()
     view = glm::lookAt(glm::vec3(1.0f, 1.25f, 1.25f), glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f, 1.0f, 0.0f));
     projection = glm::mat4(1.0f);
-
-    // Diffuse light intensity
-    prog.setUniform("Light.Ld", glm::vec3(0.9f, 0.9f, 0.9f));
-    // Specular light intensity
-    prog.setUniform("Light.Ls", glm::vec3(0.9f, 0.9f, 0.9f));
-    // Ambient light intensity
-    prog.setUniform("Light.La", glm::vec3(0.9f, 0.9f, 0.9f));
 
     textureArray[TEX_DIFFUSE_MAP] = Texture::loadTexture("media/texture/Brick_Wall_017_basecolor.jpg");
     textureArray[TEX_NORMAL_MAP] = Texture::loadTexture("media/texture/Brick_Wall_017_normal.jpg");
@@ -91,8 +100,30 @@ static void ImGui_Render()
 
     // ----
     ImGui::Separator();
-    ImGui::Text("Background Settings:");
-    ImGui::ColorEdit3("Color", (float*)&s_ClearColor); // Edit 3 floats representing a color
+    ImGui::Text("Env Settings:");
+    ImGui::ColorEdit3("BG Color", (float*)&Configs::bgColor); // Edit 3 floats representing a color
+
+    // ----
+    ImGui::Separator();
+    ImGui::Text("Shader Settings:");
+    ImGui::Checkbox("Use Blinn Phong", &Configs::useBlinnPhong);
+    ImGui::Checkbox("Use Texture Mix", &Configs::useTextureMix);
+
+    // ----
+    ImGui::Separator();
+    ImGui::Text("Light & Mat Settings:");
+    ImGui::Checkbox("Animate Light", &Configs::animateLight);
+
+    if (ImGui::DragFloat4("Light.Position", (float*)&Configs::lightPos, 0.03333f, -100.f, 100.f))
+        Configs::animateLight = false;
+
+    ImGui::ColorEdit3("Light.Ld", (float*)&Configs::lightLd);
+    ImGui::ColorEdit3("Light.Ls", (float*)&Configs::lightLs);
+    ImGui::ColorEdit3("Light.La", (float*)&Configs::lightLa);
+    ImGui::Spacing();
+    ImGui::ColorEdit3("Mat.Ka", (float*)&Configs::matKa);
+    ImGui::ColorEdit3("Mat.Ks", (float*)&Configs::matKs);
+    ImGui::ColorEdit3("Mat.Shininess", (float*)&Configs::matShininess);
 
     // ----
     ImGui::Separator();
@@ -121,16 +152,32 @@ void SceneBasic_Uniform::update(Camera* camera, float t)
 
     tPrev = t;
 
-    //if (this->m_animate)
+    if (Configs::animateLight)
     {
         angle += rotSpeed * deltaT;
         if (angle > glm::two_pi<float>()) angle -= glm::two_pi<float>();
+
+        Configs::lightPos = view * glm::vec4(10.0f * cos(angle), 1.0f, 10.0f * sin(angle), 1.0f);
     }
+
+    // Update settings in case if they are changed
+    prog.setUniform("UseBlinnPhong", Configs::useBlinnPhong);
+    prog.setUniform("UseTextureMix", Configs::useTextureMix);
+
+    prog.setUniform("Light.Position", Configs::lightPos);
+
+    prog.setUniform("Light.Ld", Configs::lightLd);
+    prog.setUniform("Light.Ls", Configs::lightLs);
+    prog.setUniform("Light.La", Configs::lightLa);
+
+    prog.setUniform("Material.Ka", Configs::matKa);
+    prog.setUniform("Material.Ks", Configs::matKs);
+    prog.setUniform("Material.Shininess", Configs::matShininess);
 }
 
 void SceneBasic_Uniform::render()
 {
-    glClearColor(s_ClearColor.x, s_ClearColor.y, s_ClearColor.z, s_ClearColor.w);
+    glClearColor(Configs::bgColor.x, Configs::bgColor.y, Configs::bgColor.z, Configs::bgColor.w);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render Plane
@@ -140,11 +187,6 @@ void SceneBasic_Uniform::render()
     glBindTexture(GL_TEXTURE_2D, textureArray[TEX_NORMAL_MAP]);
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, textureArray[TEX_MOSS]);
-
-    prog.setUniform("Light.Position", view * glm::vec4(10.0f * cos(angle), 1.0f, 10.0f * sin(angle), 1.0f));
-    prog.setUniform("Material.Ks", 0.2f, 0.2f, 0.2f);
-    prog.setUniform("Material.Ka", 0.1f, 0.1f, 0.1f);
-    prog.setUniform("Material.Shininess", 1.0f);
 
     model = glm::mat4(1.0f);
     setMatrices();
@@ -182,9 +224,11 @@ void SceneBasic_Uniform::resize(int w, int h)
     projection = glm::perspective(glm::radians(70.0f), (float)w / h, 0.3f, 100.0f);
 }
 
-void SceneBasic_Uniform::ToggleBlinnPhong()
+void SceneBasic_Uniform::processKey(int key, int scancode, int action, int mods)
 {
-    isBlinnPhong = !isBlinnPhong;
-    LOG_INFO("Use Blinn Phong: {}", isBlinnPhong);
-    prog.setUniform("UseBlinnPhong", isBlinnPhong);
+    switch (key)
+    {
+    default:
+        break;
+    }
 }

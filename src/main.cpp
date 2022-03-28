@@ -25,7 +25,7 @@ int WinMain(
         return EXIT_FAILURE;
 
 	SceneRunner runner;
-	runner.init("Alihan's Custom Renderer w/ Shaders");
+	runner.init("Alihan's Custom OpenGL Renderer");
 
 	auto scene = std::make_unique<SceneBasic_Uniform>();
 	auto camera = std::make_unique<Camera>(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));

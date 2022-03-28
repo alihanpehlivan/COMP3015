@@ -103,6 +103,6 @@ void main()
     }
     else
     {
-        FragColor = vec4(outColor, 1.0 ) + vec4( outSpec, 1 );
+        FragColor = vec4(outColor, 1.0 ) * tex0Color + vec4( outSpec, 1 );
     }
 }

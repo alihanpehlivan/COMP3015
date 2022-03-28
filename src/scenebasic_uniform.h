@@ -34,5 +34,6 @@ public:
     void render() override;
     void resize(int, int) override;
 
-    void ToggleBlinnPhong();
+    // Keyboard events from scenerunner
+    void processKey(int key, int scancode, int action, int mods);
 };
