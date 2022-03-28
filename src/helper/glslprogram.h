@@ -36,8 +36,6 @@ private:
 
     inline GLint getUniformLocation(const char *name);
 	void detachAndDeleteShaderObjects();
-    bool fileExists(const std::string &fileName);
-    std::string getExtension(const char *fileName);
 
 public:
     GLSLProgram();

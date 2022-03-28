@@ -50,54 +50,29 @@ void GLSLProgram::detachAndDeleteShaderObjects() {
 void GLSLProgram::compileShader(const char *fileName) {
 
     // Check the file name's extension to determine the shader type
-    string ext = getExtension(fileName);
+    auto ext = std::filesystem::path(fileName).extension().string();
+
     GLSLShader::GLSLShaderType type = GLSLShader::VERTEX;
 	auto it = GLSLShaderInfo::extensions.find(ext);
 	if (it != GLSLShaderInfo::extensions.end()) {
 		type = it->second;
 	} else {
-		string msg = "Unrecognized extension: " + ext;
-		throw GLSLProgramException(msg);
+		throw GLSLProgramException(fmt::format("Unrecognized extension: {}", ext));
 	}
 
     // Pass the discovered shader type along
     compileShader(fileName, type);
 }
 
-string GLSLProgram::getExtension(const char *name) {
-    string nameStr(name);
-
-    size_t dotLoc = nameStr.find_last_of('.');
-    if (dotLoc != string::npos) {
-        std::string ext = nameStr.substr(dotLoc);
-        if( ext == ".glsl" ) {
-
-            size_t loc = nameStr.find_last_of('.', dotLoc - 1);
-            if( loc == string::npos ) {
-                loc = nameStr.find_last_of('_', dotLoc - 1);
-            }
-            if( loc != string::npos ) {
-                return nameStr.substr(loc);
-            }
-        } else {
-            return ext;
-        }
-    }
-    return "";
-}
-
 void GLSLProgram::compileShader(const char *fileName,
                                 GLSLShader::GLSLShaderType type) {
-    if (!fileExists(fileName)) {
-        string message = string("Shader: ") + fileName + " not found.";
-        throw GLSLProgramException(message);
-    }
+    if (!std::filesystem::exists(fileName))
+        throw GLSLProgramException(fmt::format("Shader: {} not found.", fileName));
 
     if (handle <= 0) {
         handle = glCreateProgram();
-        if (handle == 0) {
+        if (handle == 0)
             throw GLSLProgramException("Unable to create shader program.");
-        }
     }
 
     ifstream inFile(fileName, ios::in);
@@ -516,15 +491,6 @@ void GLSLProgram::validate() {
             delete[] c_log;
         }
 
-        throw GLSLProgramException(string("Program failed to validate\n") + logString);
-
+        throw GLSLProgramException(fmt::format("Program failed to validate:\n{}", logString));
     }
-}
-
-bool GLSLProgram::fileExists(const string &fileName) {
-    struct stat info;
-    int ret = -1;
-
-    ret = stat(fileName.c_str(), &info);
-    return 0 == ret;
 }
