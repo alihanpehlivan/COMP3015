@@ -19,7 +19,8 @@ namespace Configs
     static float toonFraction = 1.0f;
 
     static bool animateLight = true;
-    static glm::vec4 lightPos = { 0.f, 0.f, 0.f, 0.f }; // Light position
+    static float lightAngle = 0.0f; // Light angle
+    static float lightDist = 10.0f; // Light distance from center
     static glm::vec3 lightLd = { 0.9f, 0.9f, 0.9f }; // Diffuse light intensity
     static glm::vec3 lightLs = { 0.9f, 0.9f, 0.9f }; // Specular light intensity
     static glm::vec3 lightLa = { 0.9f, 0.9f, 0.9f }; // Ambient light intensity
@@ -125,23 +126,72 @@ static void ImGui_Render()
     ImGui::Separator();
     ImGui::Text("Toon Settings:");
     ImGui::Checkbox("Enable Toon Shading", &Configs::useToon);
-    ImGui::DragFloat("Toon Fraction", &Configs::toonFraction, 0.01, 0.0, 1.0);
+    ImGui::DragFloat("Toon Fraction", &Configs::toonFraction, 0.01, 0.0, 10.0);
 
     // ----
     ImGui::Separator();
     ImGui::Text("Light & Mat Settings:");
     ImGui::Checkbox("Animate Light", &Configs::animateLight);
 
-    if (ImGui::DragFloat4("Light.Position", (float*)&Configs::lightPos, 0.03333f, -100.f, 100.f))
+    if (ImGui::DragFloat("Light Angle", &Configs::lightAngle, 0.03333f, -100.f, 100.f))
         Configs::animateLight = false;
-
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Light angle around the center of the scene");
+        ImGui::EndTooltip();
+    }
+    ImGui::DragFloat("Light Dist", &Configs::lightDist, 0.01f, -100.f, 100.f);
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Light distance from center of the scene");
+        ImGui::EndTooltip();
+    }
+    ImGui::Spacing();
     ImGui::ColorEdit3("Light.Ld", (float*)&Configs::lightLd);
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Diffuse light intensity");
+        ImGui::EndTooltip();
+    }
     ImGui::ColorEdit3("Light.Ls", (float*)&Configs::lightLs);
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Specular light intensity");
+        ImGui::EndTooltip();
+    }
     ImGui::ColorEdit3("Light.La", (float*)&Configs::lightLa);
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Ambient light intensity");
+        ImGui::EndTooltip();
+    }
     ImGui::Spacing();
     ImGui::ColorEdit3("Mat.Ka", (float*)&Configs::matKa);
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Ambient reflectivity");
+        ImGui::EndTooltip();
+    }
     ImGui::ColorEdit3("Mat.Ks", (float*)&Configs::matKs);
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Specular reflectivity");
+        ImGui::EndTooltip();
+    }
     ImGui::DragFloat("Mat.Shininess", &Configs::matShininess, 0.01, 0.0, 1.0);
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Specular shininess factor");
+        ImGui::EndTooltip();
+    }
 
     // ----
     ImGui::Separator();
@@ -172,10 +222,8 @@ void SceneBasic_Uniform::update(Camera* camera, float t)
 
     if (Configs::animateLight)
     {
-        angle += rotSpeed * deltaT;
-        if (angle > glm::two_pi<float>()) angle -= glm::two_pi<float>();
-
-        Configs::lightPos = view * glm::vec4(10.0f * cos(angle), 1.0f, 10.0f * sin(angle), 1.0f);
+        Configs::lightAngle += rotSpeed * deltaT;
+        if (Configs::lightAngle > glm::two_pi<float>()) Configs::lightAngle -= glm::two_pi<float>();
     }
 
     // Update settings in case if they are changed
@@ -186,7 +234,7 @@ void SceneBasic_Uniform::update(Camera* camera, float t)
     prog.setUniform("UseToon", Configs::useToon);
     prog.setUniform("ToonFraction", Configs::toonFraction);
 
-    prog.setUniform("Light.Position", Configs::lightPos);
+    prog.setUniform("Light.Position", view * glm::vec4(Configs::lightDist * cos(Configs::lightAngle), 1.0f, Configs::lightDist * sin(Configs::lightAngle), 1.0f));
 
     prog.setUniform("Light.Ld", Configs::lightLd);
     prog.setUniform("Light.Ls", Configs::lightLs);

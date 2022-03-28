@@ -21,7 +21,7 @@ private:
     Cube cube;
     std::unique_ptr<ObjMesh> mesh;
 
-    float angle = 0.0f, tPrev = 0.0f, rotSpeed = 0.5f;
+    float tPrev = 0.0f, rotSpeed = 0.5f;
 
     void setMatrices();
     bool compile();
