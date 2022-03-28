@@ -135,9 +135,23 @@ void main()
 
         // Toonify current phong reflection
         if (UseAdditiveToon)
-            FragColor = outToonColor * FragColor;
+        {
+            FragColor = outToonColor * FragColor; // This frag is already mixed above with phong model
+        }
         // Otherwise, use pure toon effect (much more sharper)
         else
-            FragColor = outToonColor * tex0Color;
+        {
+            // Mixing toon color with tex0 & tex2
+            if(UseTextureMix)
+            {
+                vec4 mixedTexColor = mix(tex0Color, tex2Color, tex2Color.a);
+                FragColor = outToonColor * mixedTexColor;
+            }
+            else
+            {
+                // Just use base texture diffuse
+                FragColor = outToonColor * tex0Color;
+            }
+        }
     }
 }
