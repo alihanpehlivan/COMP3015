@@ -37,6 +37,7 @@ uniform bool UseTextures = true;
 uniform bool UseTextureMix = true;
 
 uniform bool UseToon = false;
+uniform bool UseAdditiveToon = false;
 uniform float ToonFraction = 1.0f;
 
 void phongModelHalfVector( vec3 normal, out vec3 outColor, out vec3 outSpec, out float specIntensity )
@@ -118,7 +119,7 @@ void main()
         FragColor = vec4(outColor, 1.0 ) + vec4( outSpec, 1 );
     }
 
-    // Apply toon shading if enabled
+    // Apply toon model if enabled
     if (UseToon)
     {
         vec4 outToonColor;
@@ -131,9 +132,12 @@ void main()
           outToonColor = vec4(vec3(0.4), 1.0);
         else
           outToonColor = vec4(vec3(0.2), 1.0);
-        
-        FragColor = outToonColor * FragColor;
+
+        // Toonify current phong reflection
+        if (UseAdditiveToon)
+            FragColor = outToonColor * FragColor;
+        // Otherwise, use pure toon effect (much more sharper)
+        else
+            FragColor = outToonColor * tex0Color;
     }
 }
-
-

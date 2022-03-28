@@ -16,6 +16,7 @@ namespace Configs
     static bool useTextureMix = true;
 
     static bool useToon = false;
+    static bool useAdditiveToon = false;
     static float toonFraction = 1.0f;
 
     static bool animateLight = true;
@@ -126,8 +127,20 @@ static void ImGui_Render()
     ImGui::Separator();
     ImGui::Text("Toon Settings:");
     ImGui::Checkbox("Enable Toon Shading", &Configs::useToon);
+    ImGui::Checkbox("Use Additive Toon", &Configs::useAdditiveToon);
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("If enabled will use Phong + Toon mixed otherwise pure toon effect will be applied");
+        ImGui::EndTooltip();
+    }
     ImGui::DragFloat("Toon Fraction", &Configs::toonFraction, 0.01, 0.0, 10.0);
-
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Toon intensity");
+        ImGui::EndTooltip();
+    }
     // ----
     ImGui::Separator();
     ImGui::Text("Light & Mat Settings:");
@@ -232,6 +245,7 @@ void SceneBasic_Uniform::update(Camera* camera, float t)
     prog.setUniform("UseTextureMix", Configs::useTextureMix);
 
     prog.setUniform("UseToon", Configs::useToon);
+    prog.setUniform("UseAdditiveToon", Configs::useAdditiveToon);
     prog.setUniform("ToonFraction", Configs::toonFraction);
 
     prog.setUniform("Light.Position", view * glm::vec4(Configs::lightDist * cos(Configs::lightAngle), 1.0f, Configs::lightDist * sin(Configs::lightAngle), 1.0f));
