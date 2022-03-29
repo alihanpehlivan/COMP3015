@@ -119,7 +119,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\pch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\helper\glslprogram.cpp">
+    <ClCompile Include="src\helper\ShaderProgram.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\pch.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -226,7 +226,7 @@
     <ClInclude Include="src\helper\camera.h" />
     <ClInclude Include="src\helper\cube.h" />
     <ClInclude Include="src\helper\drawable.h" />
-    <ClInclude Include="src\helper\glslprogram.h" />
+    <ClInclude Include="src\helper\ShaderProgram.h" />
     <ClInclude Include="src\helper\glutils.h" />
     <ClInclude Include="src\helper\objmesh.h" />
     <ClInclude Include="src\helper\plane.h" />

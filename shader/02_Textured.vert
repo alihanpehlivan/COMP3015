@@ -5,6 +5,15 @@ layout (location = 1) in vec3 VertexNormal;
 layout (location = 2) in vec2 VertexTexCoord;
 layout (location = 3) in vec4 VertexTangent;
 
+out vec3 LightDir;
+out vec3 ViewDir;
+out vec2 TexCoord;
+
+out gl_PerVertex
+{
+    vec4 gl_Position;
+};
+
 // Must match with frag shader
 struct LightInfo
 {
@@ -15,11 +24,6 @@ struct LightInfo
 };
 
 uniform LightInfo Light;
-
-out vec3 LightDir;
-out vec3 ViewDir;
-out vec2 TexCoord;
-
 uniform mat4 ModelViewMatrix;
 uniform mat3 NormalMatrix;
 uniform mat4 ProjectionMatrix;
@@ -42,12 +46,9 @@ void main()
 
     // Transform light direction and view direction to tangent space
     vec3 pos = vec3( ModelViewMatrix * vec4(VertexPosition,1.0) );
+
     LightDir = normalize( toObjectLocal * (Light.Position.xyz - pos) );
-
     ViewDir = toObjectLocal * normalize(-pos);
-
     TexCoord = VertexTexCoord;
-
     gl_Position = MVP * vec4(VertexPosition,1.0);
 }
-

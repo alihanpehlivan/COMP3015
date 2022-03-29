@@ -15,8 +15,8 @@ class Camera;
 class SceneBasic_Uniform : public Scene
 {
 private:
-    GLSLProgram prog;
-    
+    ESP prog;
+
     Plane plane;
     Cube cube;
     std::unique_ptr<ObjMesh> mesh;

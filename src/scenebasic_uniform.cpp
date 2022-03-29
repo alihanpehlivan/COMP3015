@@ -76,13 +76,14 @@ bool SceneBasic_Uniform::compile()
 {
 	try
     {
-		prog.compileShader("shader/02_Textured.vert");
-		prog.compileShader("shader/02_Textured.frag");
-		//prog.compileShader("shader/02_Textured.geom");
-		prog.link();
-		prog.use();
+        prog.Create();
+        prog.Compile("shader/02_Textured.vert");
+        prog.Compile("shader/02_Textured.frag");
+        prog.Link();
+        prog.Validate();
+        prog.Use();
 	}
-    catch (GLSLProgramException &e)
+    catch (ESPException&e)
     {
         LOG_CRITICAL(e.what());
         return false;
@@ -240,23 +241,23 @@ void SceneBasic_Uniform::update(Camera* camera, float t)
     }
 
     // Update settings in case if they are changed
-    prog.setUniform("UseBlinnPhong", Configs::useBlinnPhong);
-    prog.setUniform("UseTextures", Configs::useTextures);
-    prog.setUniform("UseTextureMix", Configs::useTextureMix);
+    prog.SetUniform("UseBlinnPhong", Configs::useBlinnPhong);
+    prog.SetUniform("UseTextures", Configs::useTextures);
+    prog.SetUniform("UseTextureMix", Configs::useTextureMix);
 
-    prog.setUniform("UseToon", Configs::useToon);
-    prog.setUniform("UseAdditiveToon", Configs::useAdditiveToon);
-    prog.setUniform("ToonFraction", Configs::toonFraction);
+    prog.SetUniform("UseToon", Configs::useToon);
+    prog.SetUniform("UseAdditiveToon", Configs::useAdditiveToon);
+    prog.SetUniform("ToonFraction", Configs::toonFraction);
 
-    prog.setUniform("Light.Position", view * glm::vec4(Configs::lightDist * cos(Configs::lightAngle), 1.0f, Configs::lightDist * sin(Configs::lightAngle), 1.0f));
+    prog.SetUniform("Light.Position", view * glm::vec4(Configs::lightDist * cos(Configs::lightAngle), 1.0f, Configs::lightDist * sin(Configs::lightAngle), 1.0f));
 
-    prog.setUniform("Light.Ld", Configs::lightLd);
-    prog.setUniform("Light.Ls", Configs::lightLs);
-    prog.setUniform("Light.La", Configs::lightLa);
+    prog.SetUniform("Light.Ld", Configs::lightLd);
+    prog.SetUniform("Light.Ls", Configs::lightLs);
+    prog.SetUniform("Light.La", Configs::lightLa);
 
-    prog.setUniform("Material.Ka", Configs::matKa);
-    prog.setUniform("Material.Ks", Configs::matKs);
-    prog.setUniform("Material.Shininess", Configs::matShininess);
+    prog.SetUniform("Material.Ka", Configs::matKa);
+    prog.SetUniform("Material.Ks", Configs::matKs);
+    prog.SetUniform("Material.Shininess", Configs::matShininess);
 }
 
 void SceneBasic_Uniform::render()
@@ -295,9 +296,9 @@ void SceneBasic_Uniform::setMatrices()
 {
     glm::mat4 mv = view * model; //we create a model view matrix
     
-    prog.setUniform("ModelViewMatrix", mv);
-    prog.setUniform("NormalMatrix", glm::mat3(glm::vec3(mv[0]), glm::vec3(mv[1]), glm::vec3(mv[2])));
-    prog.setUniform("MVP", projection * mv);
+    prog.SetUniform("ModelViewMatrix", mv);
+    prog.SetUniform("NormalMatrix", glm::mat3(glm::vec3(mv[0]), glm::vec3(mv[1]), glm::vec3(mv[2])));
+    prog.SetUniform("MVP", projection * mv);
 }
 
 void SceneBasic_Uniform::resize(int w, int h)

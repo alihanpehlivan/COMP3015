@@ -58,9 +58,6 @@
     <ClCompile Include="src\log.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\helper\glslprogram.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
     <ClCompile Include="src\helper\glutils.cpp">
       <Filter>helper</Filter>
     </ClCompile>
@@ -95,6 +92,9 @@
       <Filter>helper</Filter>
     </ClCompile>
     <ClCompile Include="src\helper\texture.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\ShaderProgram.cpp">
       <Filter>helper</Filter>
     </ClCompile>
   </ItemGroup>
@@ -159,9 +159,6 @@
     <ClInclude Include="src\helper\drawable.h">
       <Filter>helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\helper\glslprogram.h">
-      <Filter>helper</Filter>
-    </ClInclude>
     <ClInclude Include="src\helper\glutils.h">
       <Filter>helper</Filter>
     </ClInclude>
@@ -211,6 +208,9 @@
       <Filter>helper</Filter>
     </ClInclude>
     <ClInclude Include="src\helper\texture.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\ShaderProgram.h">
       <Filter>helper</Filter>
     </ClInclude>
   </ItemGroup>
