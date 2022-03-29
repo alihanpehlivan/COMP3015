@@ -94,7 +94,7 @@
     <ClCompile Include="src\helper\texture.cpp">
       <Filter>helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\helper\ShaderProgram.cpp">
+    <ClCompile Include="src\helper\shader_manager.cpp">
       <Filter>helper</Filter>
     </ClCompile>
   </ItemGroup>
@@ -210,7 +210,7 @@
     <ClInclude Include="src\helper\texture.h">
       <Filter>helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\helper\ShaderProgram.h">
+    <ClInclude Include="src\helper\shader_manager.h">
       <Filter>helper</Filter>
     </ClInclude>
   </ItemGroup>

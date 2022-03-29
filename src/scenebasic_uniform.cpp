@@ -11,6 +11,8 @@ namespace Configs
 {
     // Scene & shader settings
     static ImVec4 bgColor = ImVec4(25 / 255.0f, 25 / 255.0f, 25 / 255.0f, 1.00f);
+    static glm::vec3 cameraPos;
+
     static bool useBlinnPhong = true;
     static bool useTextures = true;
     static bool useTextureMix = true;
@@ -72,22 +74,60 @@ bool SceneBasic_Uniform::initScene()
     return true;
 }
 
+////////////////////////////////
+
+static GLuint defPipeline;
+
+static GLuint vertProgram;
+static GLuint smoothProgram;
+
+static GLuint defVertShader;
+static GLuint defFragShader;
+
+////////////////////////////////
+
 bool SceneBasic_Uniform::compile()
 {
+    #define GLERR GLUtils::checkForOpenGLError(__FILE__, __LINE__)
+
 	try
     {
-        prog.Create();
-        prog.Compile("shader/02_Textured.vert");
-        prog.Compile("shader/02_Textured.frag");
-        prog.Link();
-        prog.Validate();
-        prog.Use();
+        glGenProgramPipelines(1, &defPipeline); GLERR;
+
+        vertProgram = sm.Create();
+        smoothProgram = sm.Create();
+
+        defVertShader = sm.Compile("shader/02_Textured.vert");;
+        defFragShader = sm.Compile("shader/02_Textured.frag");
+
+        // Base Shader
+        glAttachShader(vertProgram, defVertShader); GLERR;
+
+        // Optional Frag Shaders
+        glAttachShader(smoothProgram, defFragShader); GLERR;
+
+        sm.Link(vertProgram);
+        sm.Link(smoothProgram);
+
+        sm.CleanupProgram(vertProgram);
+        sm.CleanupProgram(smoothProgram);
+
+        // Set pipeline program stages
+        glUseProgramStages(defPipeline, GL_VERTEX_SHADER_BIT, vertProgram); GLERR;
+        glUseProgramStages(defPipeline, GL_FRAGMENT_SHADER_BIT, smoothProgram); GLERR;
+
+        sm.ValidatePipeline(defPipeline);
+
+        // Activate the pipeline
+        glBindProgramPipeline(defPipeline); GLERR;
 	}
-    catch (ESPException&e)
+    catch (ShaderManagerException&e)
     {
         LOG_CRITICAL(e.what());
         return false;
 	}
+
+    #undef GLERR
 
     return true;
 }
@@ -207,6 +247,11 @@ static void ImGui_Render()
         ImGui::EndTooltip();
     }
 
+
+    // ----
+    ImGui::Separator();
+    ImGui::Text("Camera Pos: %.3f, %.3f, %.3f", Configs::cameraPos.x, Configs::cameraPos.y, Configs::cameraPos.z);
+
     // ----
     ImGui::Separator();
     ImGui::Text("Average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
@@ -240,24 +285,26 @@ void SceneBasic_Uniform::update(Camera* camera, float t)
         if (Configs::lightAngle > glm::two_pi<float>()) Configs::lightAngle -= glm::two_pi<float>();
     }
 
-    // Update settings in case if they are changed
-    prog.SetUniform("UseBlinnPhong", Configs::useBlinnPhong);
-    prog.SetUniform("UseTextures", Configs::useTextures);
-    prog.SetUniform("UseTextureMix", Configs::useTextureMix);
+    Configs::cameraPos = camera->Position;
 
-    prog.SetUniform("UseToon", Configs::useToon);
-    prog.SetUniform("UseAdditiveToon", Configs::useAdditiveToon);
-    prog.SetUniform("ToonFraction", Configs::toonFraction);
+    // Update all uniforms
+    sm.SetUniform(vertProgram, "LightPosition", view * glm::vec4(Configs::lightDist * cos(Configs::lightAngle), 1.0f, Configs::lightDist * sin(Configs::lightAngle), 1.0f));
 
-    prog.SetUniform("Light.Position", view * glm::vec4(Configs::lightDist * cos(Configs::lightAngle), 1.0f, Configs::lightDist * sin(Configs::lightAngle), 1.0f));
+    sm.SetUniform(smoothProgram, "UseBlinnPhong", Configs::useBlinnPhong);
+    sm.SetUniform(smoothProgram, "UseTextures", Configs::useTextures);
+    sm.SetUniform(smoothProgram, "UseTextureMix", Configs::useTextureMix);
 
-    prog.SetUniform("Light.Ld", Configs::lightLd);
-    prog.SetUniform("Light.Ls", Configs::lightLs);
-    prog.SetUniform("Light.La", Configs::lightLa);
+    sm.SetUniform(smoothProgram, "UseToon", Configs::useToon);
+    sm.SetUniform(smoothProgram, "UseAdditiveToon", Configs::useAdditiveToon);
+    sm.SetUniform(smoothProgram, "ToonFraction", Configs::toonFraction);
 
-    prog.SetUniform("Material.Ka", Configs::matKa);
-    prog.SetUniform("Material.Ks", Configs::matKs);
-    prog.SetUniform("Material.Shininess", Configs::matShininess);
+    sm.SetUniform(smoothProgram,"Light.Ld", Configs::lightLd);
+    sm.SetUniform(smoothProgram,"Light.Ls", Configs::lightLs);
+    sm.SetUniform(smoothProgram,"Light.La", Configs::lightLa);
+
+    sm.SetUniform(smoothProgram,"Material.Ka", Configs::matKa);
+    sm.SetUniform(smoothProgram,"Material.Ks", Configs::matKs);
+    sm.SetUniform(smoothProgram,"Material.Shininess", Configs::matShininess);
 }
 
 void SceneBasic_Uniform::render()
@@ -296,9 +343,9 @@ void SceneBasic_Uniform::setMatrices()
 {
     glm::mat4 mv = view * model; //we create a model view matrix
     
-    prog.SetUniform("ModelViewMatrix", mv);
-    prog.SetUniform("NormalMatrix", glm::mat3(glm::vec3(mv[0]), glm::vec3(mv[1]), glm::vec3(mv[2])));
-    prog.SetUniform("MVP", projection * mv);
+    sm.SetUniform(vertProgram, "ModelViewMatrix", mv);
+    sm.SetUniform(vertProgram, "NormalMatrix", glm::mat3(glm::vec3(mv[0]), glm::vec3(mv[1]), glm::vec3(mv[2])));
+    sm.SetUniform(vertProgram, "MVP", projection * mv);
 }
 
 void SceneBasic_Uniform::resize(int w, int h)

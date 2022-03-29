@@ -14,16 +14,7 @@ out gl_PerVertex
     vec4 gl_Position;
 };
 
-// Must match with frag shader
-struct LightInfo
-{
-	vec4 Position;  // Light position in eye coords
-	vec3 La;        // Ambient light intensity
-	vec3 Ld;        // Diffuse light intensity
-	vec3 Ls;        // Specular light intensity
-};
-
-uniform LightInfo Light;
+uniform vec4 LightPosition;
 uniform mat4 ModelViewMatrix;
 uniform mat3 NormalMatrix;
 uniform mat4 ProjectionMatrix;
@@ -47,8 +38,9 @@ void main()
     // Transform light direction and view direction to tangent space
     vec3 pos = vec3( ModelViewMatrix * vec4(VertexPosition,1.0) );
 
-    LightDir = normalize( toObjectLocal * (Light.Position.xyz - pos) );
+    LightDir = normalize( toObjectLocal * (LightPosition.xyz - pos) );
     ViewDir = toObjectLocal * normalize(-pos);
     TexCoord = VertexTexCoord;
+
     gl_Position = MVP * vec4(VertexPosition,1.0);
 }

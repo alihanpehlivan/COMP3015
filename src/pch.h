@@ -29,7 +29,7 @@
 
 // Utilities
 #include "helper/glutils.h"
-#include "helper/ShaderProgram.h"
+#include "helper/shader_manager.h"
 
 // Custom logger
 #include "log.h"

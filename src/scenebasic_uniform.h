@@ -15,7 +15,7 @@ class Camera;
 class SceneBasic_Uniform : public Scene
 {
 private:
-    ESP prog;
+    ShaderManager sm;
 
     Plane plane;
     Cube cube;

@@ -29,7 +29,6 @@ int WinMain(
 
 	auto scene = std::make_unique<SceneBasic_Uniform>();
 	auto camera = std::make_unique<Camera>(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
 	auto res = runner.run(camera.get(), scene.get());
 
 	LOG_INFO("program terminated with: {}", res ? "FAILURE" : "SUCCESS");

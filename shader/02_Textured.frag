@@ -14,7 +14,7 @@ layout(location=0) out vec4 FragColor;
 
 struct LightInfo
 {
-	vec4 Position;  // Light position in eye coords
+	vec4 Position;  // Not used, this is calculated in vert shader. Leaving this for possible future usage.
 	vec3 La;        // Ambient light intensity
 	vec3 Ld;        // Diffuse light intensity
 	vec3 Ls;        // Specular light intensity
