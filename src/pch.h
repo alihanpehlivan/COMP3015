@@ -16,6 +16,7 @@
 #include <tuple>
 #include <array>
 #include <filesystem>
+#include <source_location>
 
 // GL Loader-Generator
 #include <glad/glad.h>

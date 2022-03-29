@@ -88,11 +88,10 @@ static GLuint defFragShader;
 
 bool SceneBasic_Uniform::compile()
 {
-    #define GLERR GLUtils::checkForOpenGLError(__FILE__, __LINE__)
-
 	try
     {
         glGenProgramPipelines(1, &defPipeline); GLERR;
+        glBindProgramPipeline(defPipeline); GLERR;
 
         vertProgram = sm.Create();
         smoothProgram = sm.Create();
@@ -117,17 +116,12 @@ bool SceneBasic_Uniform::compile()
         glUseProgramStages(defPipeline, GL_FRAGMENT_SHADER_BIT, smoothProgram); GLERR;
 
         sm.ValidatePipeline(defPipeline);
-
-        // Activate the pipeline
-        glBindProgramPipeline(defPipeline); GLERR;
 	}
     catch (ShaderManagerException&e)
     {
         LOG_CRITICAL(e.what());
         return false;
 	}
-
-    #undef GLERR
 
     return true;
 }

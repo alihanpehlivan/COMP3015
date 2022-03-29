@@ -150,93 +150,101 @@ void ShaderManager::ValidatePipeline(GLuint pipeline)
 	}
 }
 
-void ShaderManager::BindAttribLocation(GLuint program, GLuint location, const char* name) {
-	glBindAttribLocation(program, location, name);
-	GLUtils::checkForOpenGLError(__FILE__, __LINE__);
-}
-
-void ShaderManager::BindFragDataLocation(GLuint program, GLuint location, const char* name) {
-	glBindFragDataLocation(program, location, name);
-	GLUtils::checkForOpenGLError(__FILE__, __LINE__);
-}
-
-void ShaderManager::SetUniform(GLuint program, const char* name, float x, float y, float z) {
-	GLint loc = GetUniformLocation(program, name);
-	if (loc < 0)
-		LOG_CRITICAL("xyz set uniform error: {} loc: {} ", name, loc);
-	glProgramUniform3f(program, loc, x, y, z);
-	GLUtils::checkForOpenGLError(__FILE__, __LINE__);
-}
-
-void ShaderManager::SetUniform(GLuint program, const char* name, const glm::vec3& v) {
-	this->SetUniform(program, name, v.x, v.y, v.z);
-}
-
-void ShaderManager::SetUniform(GLuint program, const char* name, const glm::vec4& v) {
-	GLint loc = GetUniformLocation(program, name);
-	if (loc < 0)
-		LOG_CRITICAL("vec4 set uniform error: {} loc: {} ", name, loc);
-	glProgramUniform4f(program, loc, v.x, v.y, v.z, v.w);
-	GLUtils::checkForOpenGLError(__FILE__, __LINE__);
-}
-
-void ShaderManager::SetUniform(GLuint program, const char* name, const glm::vec2& v) {
-	GLint loc = GetUniformLocation(program, name);
-	if (loc < 0)
-		LOG_CRITICAL("vec2 set uniform error: {} loc: {} ", name, loc);
-	glProgramUniform2f(program, loc, v.x, v.y);
-	GLUtils::checkForOpenGLError(__FILE__, __LINE__);
-}
-
-void ShaderManager::SetUniform(GLuint program, const char* name, const glm::mat4& m) {
-	GLint loc = GetUniformLocation(program, name);
-	if (loc < 0)
-		LOG_CRITICAL("mat4 set uniform error: {} loc: {} ", name, loc);
-	glProgramUniformMatrix4fv(program, loc, 1, GL_FALSE, &m[0][0]);
-	GLUtils::checkForOpenGLError(__FILE__, __LINE__);
-}
-
-void ShaderManager::SetUniform(GLuint program, const char* name, const glm::mat3& m) {
-	GLint loc = GetUniformLocation(program, name);
-	if (loc < 0)
-		LOG_CRITICAL("mat3 set uniform error: {} loc: {} ", name, loc);
-	glProgramUniformMatrix3fv(program, loc, 1, GL_FALSE, &m[0][0]);
-	GLUtils::checkForOpenGLError(__FILE__, __LINE__);
-}
-
-void ShaderManager::SetUniform(GLuint program, const char* name, float val) {
-	GLint loc = GetUniformLocation(program, name);
-	if (loc < 0)
-		LOG_CRITICAL("float set uniform error: {} : {} loc: {} ", name, val, loc);
-	glProgramUniform1f(program, loc, val);
-	GLUtils::checkForOpenGLError(__FILE__, __LINE__);
-}
-
-void ShaderManager::SetUniform(GLuint program, const char* name, int val) {
-	GLint loc = GetUniformLocation(program, name);
-	if (loc < 0)
-		LOG_CRITICAL("int set uniform error: {} : {} loc: {} ", name, val, loc);
-	glProgramUniform1i(program, loc, val);
-	GLUtils::checkForOpenGLError(__FILE__, __LINE__);
-}
-
-void ShaderManager::SetUniform(GLuint program, const char* name, GLuint val) {
-	GLint loc = GetUniformLocation(program, name);
-	if (loc < 0)
-		LOG_CRITICAL("uint set uniform error: {} : {} loc: {} ", name, val, loc);
-	glProgramUniform1ui(program, loc, val);
-	GLUtils::checkForOpenGLError(__FILE__, __LINE__);
-}
-
-void ShaderManager::SetUniform(GLuint program, const char* name, bool val) {
-	GLint loc = GetUniformLocation(program, name);
-	if (loc < 0)
-		LOG_CRITICAL("bool set uniform error: {} : {} loc: {} ", name, val, loc);
-	glProgramUniform1i(program, loc, val);
-	GLUtils::checkForOpenGLError(__FILE__, __LINE__);
-}
-
-GLint ShaderManager::GetUniformLocation(GLuint program, const char* name)
+void ShaderManager::BindAttribLocation(GLuint program, GLuint location, const char* name,
+	const std::source_location srcloc/*= std::source_location::current()*/)
 {
-	return glGetUniformLocation(program, name);
+	glBindAttribLocation(program, location, name);
+	GLUtils::checkForOpenGLError(srcloc.file_name(), srcloc.line());
+}
+
+void ShaderManager::BindFragDataLocation(GLuint program, GLuint location, const char* name,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	glBindFragDataLocation(program, location, name);
+	GLUtils::checkForOpenGLError(srcloc.file_name(), srcloc.line());
+}
+
+void ShaderManager::SetUniform(GLuint program, const char* name, float x, float y, float z,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	glProgramUniform3f(program, GetUniformLocation(program, name, srcloc), x, y, z); GLERR;
+}
+
+void ShaderManager::SetUniform(GLuint program, const char* name, const glm::vec3& v,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	this->SetUniform(program, name, v.x, v.y, v.z, srcloc);
+}
+
+void ShaderManager::SetUniform(GLuint program, const char* name, const glm::vec4& v,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	glProgramUniform4f(program, GetUniformLocation(program, name, srcloc), v.x, v.y, v.z, v.w); GLERR;
+}
+
+void ShaderManager::SetUniform(GLuint program, const char* name, const glm::vec2& v,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	glProgramUniform2f(program, GetUniformLocation(program, name, srcloc), v.x, v.y); GLERR;
+}
+
+void ShaderManager::SetUniform(GLuint program, const char* name, const glm::mat4& m,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	glProgramUniformMatrix4fv(program, GetUniformLocation(program, name, srcloc), 1, GL_FALSE, &m[0][0]); GLERR;
+}
+
+void ShaderManager::SetUniform(GLuint program, const char* name, const glm::mat3& m,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	glProgramUniformMatrix3fv(program, GetUniformLocation(program, name, srcloc), 1, GL_FALSE, &m[0][0]); GLERR;
+}
+
+void ShaderManager::SetUniform(GLuint program, const char* name, float val,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	glProgramUniform1f(program, GetUniformLocation(program, name, srcloc), val); GLERR;
+}
+
+void ShaderManager::SetUniform(GLuint program, const char* name, int val,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	glProgramUniform1i(program, GetUniformLocation(program, name, srcloc), val); GLERR;
+}
+
+void ShaderManager::SetUniform(GLuint program, const char* name, GLuint val,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	glProgramUniform1ui(program, GetUniformLocation(program, name, srcloc), val); GLERR;
+}
+
+void ShaderManager::SetUniform(GLuint program, const char* name, bool val,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	glProgramUniform1i(program, GetUniformLocation(program, name, srcloc), val); GLERR;
+}
+
+GLint ShaderManager::GetUniformLocation(GLuint program, const char* name,
+	const std::source_location srcloc/*= std::source_location::current()*/)
+{
+	auto& programMap = _uniformLocations[program];
+	auto it = programMap.find(name);
+
+	if (it == programMap.end())
+	{
+		GLint loc = glGetUniformLocation(program, name);
+
+		// Log any errors in details
+		if (loc < 0)
+		{
+			LOG_CRITICAL("cant find uniform location \"{}\" in program {}", name, program);
+			LOG_CRITICAL("in function: \"{}\" file: \"{}\" line: \"{}\"",
+				srcloc.function_name(), srcloc.file_name(), srcloc.line());
+		}
+
+		programMap[name] = loc;
+		return loc;
+	}
+
+	return it->second;
 }
