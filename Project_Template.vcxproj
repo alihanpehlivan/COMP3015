@@ -210,6 +210,10 @@
     <None Include="shader\02_Textured.frag" />
     <None Include="shader\02_Textured.geom" />
     <None Include="shader\02_Textured.vert" />
+    <None Include="shader\BlinnPhongPerFragSingleLight.frag" />
+    <None Include="shader\BlinnPhongPerFragSingleLight.vert" />
+    <None Include="shader\DiffuseSingleTexture.frag" />
+    <None Include="shader\DiffuseSingleTexture.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h" />

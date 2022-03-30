@@ -115,6 +115,18 @@
     <None Include="shader\02_Textured.geom">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shader\DiffuseSingleTexture.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shader\BlinnPhongPerFragSingleLight.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shader\DiffuseSingleTexture.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shader\BlinnPhongPerFragSingleLight.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">

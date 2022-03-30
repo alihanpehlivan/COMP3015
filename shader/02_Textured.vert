@@ -5,20 +5,25 @@ layout (location = 1) in vec3 VertexNormal;
 layout (location = 2) in vec2 VertexTexCoord;
 layout (location = 3) in vec4 VertexTangent;
 
-out vec3 LightDir;
-out vec3 ViewDir;
-out vec2 TexCoord;
+layout (location = 0) out vec2 TexCoord;
+layout (location = 1) out vec3 LightDir;
+layout (location = 2) out vec3 ViewDir;
 
+// Uniform buffers
+layout (std140, binding = 0) uniform Matrices
+{
+    mat4 MVP;
+    mat4 ModelViewMatrix;
+    mat3 NormalMatrix;
+};
+
+// Needed for seperate shaders
 out gl_PerVertex
 {
     vec4 gl_Position;
 };
 
 uniform vec4 LightPosition;
-uniform mat4 ModelViewMatrix;
-uniform mat3 NormalMatrix;
-uniform mat4 ProjectionMatrix;
-uniform mat4 MVP;
 
 void main()
 {

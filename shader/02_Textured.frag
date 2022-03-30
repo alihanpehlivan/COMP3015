@@ -1,23 +1,20 @@
 #version 460
 
-// Light & view dir calculated in vertex shader for normal maps
-// In addition we will use these in phong model so we can optimize our model further
-in vec3 LightDir;
-in vec3 ViewDir;
-in vec2 TexCoord;
+layout (binding = 0) uniform sampler2D ColorTex;
+layout (binding = 1) uniform sampler2D NormalMapTex;
+layout (binding = 2) uniform sampler2D AdditionalColorTex;
 
-layout(binding=0) uniform sampler2D ColorTex;
-layout(binding=1) uniform sampler2D NormalMapTex;
-layout(binding=2) uniform sampler2D AdditionalColorTex;
+layout (location = 0) in vec2 TexCoord;
+layout (location = 1) in vec3 LightDir;
+layout (location = 2) in vec3 ViewDir;
 
-layout(location=0) out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
 
 struct LightInfo
 {
-	vec4 Position;  // Not used, this is calculated in vert shader. Leaving this for possible future usage.
-	vec3 La;        // Ambient light intensity
-	vec3 Ld;        // Diffuse light intensity
-	vec3 Ls;        // Specular light intensity
+	vec3 La; // Ambient light intensity
+	vec3 Ld; // Diffuse light intensity
+	vec3 Ls; // Specular light intensity
 };
 
 uniform LightInfo Light;
