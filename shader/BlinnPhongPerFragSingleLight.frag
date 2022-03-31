@@ -30,7 +30,7 @@ struct MaterialInfo
 uniform LightInfo Light;
 uniform MaterialInfo Material;
 
-void phongModelHalfVector(vec3 normal, out vec3 outColor, out vec3 outSpec)
+vec3 phongModelHalfVector(vec3 normal)
 {
     // (H) calculate the half vector between the light vector and the view vector
 	vec3 halfDir = normalize(ViewDir + LightDir);
@@ -44,17 +44,17 @@ void phongModelHalfVector(vec3 normal, out vec3 outColor, out vec3 outSpec)
     // With diffuse light intensity
 	vec3 diffuse = Light.Ld * specIntensity;
 
+	vec3 spec = vec3(0.0);
+
     // If the vertex is lit, compute the specular color
 	// Note that we create dot product of halfDir & normals
 	if(specIntensity > 0.0)
-		outSpec = Light.Ls * Material.Ks * pow(max(dot(halfDir, normal), 0), Material.Shininess);
+		spec = Light.Ls * Material.Ks * pow(max(dot(halfDir, normal), 0), Material.Shininess);
 
-    outColor = ambient + diffuse;
+    return ambient + diffuse + spec;
 }
 
 void main()
 {
-	vec3 outColor, outSpec;
-	phongModelHalfVector(Normal.xyz, outColor, outSpec);
-	FragColor = FragColor * vec4(outColor, 1) + vec4(outSpec, 1);
+	FragColor = vec4(phongModelHalfVector(Normal.xyz), 1.0);
 }

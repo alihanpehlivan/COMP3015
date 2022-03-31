@@ -119,7 +119,42 @@ std::array<GLuint, ubo::MAX> UBOName;
 
 ////////////////////////////////
 
-void generateMatriceUBO()
+GLuint fbo;
+
+void SceneBasic_Uniform::setupFBO()
+{
+    // The depth buffer
+    GLuint depthBuf;
+    glGenRenderbuffers(1, &depthBuf);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthBuf);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+
+    // The diffuse+specular component
+    glActiveTexture(GL_TEXTURE0);
+    GLuint diffSpecTex;
+    glGenTextures(1, &diffSpecTex);
+    glBindTexture(GL_TEXTURE_2D, diffSpecTex);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuf);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, diffSpecTex, 0);
+
+    GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, DrawBuffers);
+
+    GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (result != GL_FRAMEBUFFER_COMPLETE)
+        LOG_ERROR("no framebuf.");
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void SceneBasic_Uniform::setupUBO()
 {
     // NOTE NOTE NOTE: When uploading UBO treat mat3 as mat4
     // mat4:MVP, mat4:ModelViewMatrix, mat3:NormalMatrix
@@ -192,7 +227,10 @@ bool SceneBasic_Uniform::compile()
     }
 
     // Generate matrices uniform buffer objects
-    generateMatriceUBO();
+    setupUBO();
+
+    // Generate frame buffer object
+    setupFBO();
 
     return true;
 }
@@ -361,25 +399,6 @@ void SceneBasic_Uniform::update(Camera* camera, float t)
     sm.SetUniform(ProgramName[program::PHONG_FRAG], "Material.Ka", Configs::matKa);
     sm.SetUniform(ProgramName[program::PHONG_FRAG], "Material.Ks", Configs::matKs);
     sm.SetUniform(ProgramName[program::PHONG_FRAG], "Material.Shininess", Configs::matShininess);
-
-    // Update all uniforms
-    //sm.SetUniform(vertProgram, "LightPosition", view * glm::vec4(Configs::lightDist * cos(Configs::lightAngle), 1.0f, Configs::lightDist * sin(Configs::lightAngle), 1.0f));
-    
-    //sm.SetUniform(smoothProgram, "UseBlinnPhong", Configs::useBlinnPhong);
-    //sm.SetUniform(smoothProgram, "UseTextures", Configs::useTextures);
-    //sm.SetUniform(smoothProgram, "UseTextureMix", Configs::useTextureMix);
-    
-    //sm.SetUniform(smoothProgram, "UseToon", Configs::useToon);
-    //sm.SetUniform(smoothProgram, "UseAdditiveToon", Configs::useAdditiveToon);
-    //sm.SetUniform(smoothProgram, "ToonFraction", Configs::toonFraction);
-    
-    //sm.SetUniform(smoothProgram,"Light.Ld", Configs::lightLd);
-    //sm.SetUniform(smoothProgram,"Light.Ls", Configs::lightLs);
-    //sm.SetUniform(smoothProgram,"Light.La", Configs::lightLa);
-    
-    //sm.SetUniform(smoothProgram,"Material.Ka", Configs::matKa);
-    //sm.SetUniform(smoothProgram,"Material.Ks", Configs::matKs);
-    //sm.SetUniform(smoothProgram,"Material.Shininess", Configs::matShininess);
 }
 
 void SceneBasic_Uniform::render()
@@ -393,12 +412,12 @@ void SceneBasic_Uniform::render()
     {
         //glBindProgramPipeline(PipelineName[pipeline::PHONG]); GLERR; // TEST
         // Render Plane
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureArray[TEX_DIFFUSE_MAP]);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, textureArray[TEX_NORMAL_MAP]);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, textureArray[TEX_MOSS]);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, textureArray[TEX_DIFFUSE_MAP]);
+        //glActiveTexture(GL_TEXTURE1);
+        //glBindTexture(GL_TEXTURE_2D, textureArray[TEX_NORMAL_MAP]);
+        //glActiveTexture(GL_TEXTURE2);
+        //glBindTexture(GL_TEXTURE_2D, textureArray[TEX_MOSS]);
 
         model = glm::mat4(1.0f);
         setMatrices();
@@ -406,10 +425,10 @@ void SceneBasic_Uniform::render()
 
         //glBindProgramPipeline(PipelineName[pipeline::DIFFUSE]); GLERR; // TEST
         // Render the Mesh
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureArray[TEX_OGRE_DIFFUSE_MAP]);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, textureArray[TEX_OGRE_NORMAL_MAP]);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, textureArray[TEX_OGRE_DIFFUSE_MAP]);
+        //glActiveTexture(GL_TEXTURE1);
+        //glBindTexture(GL_TEXTURE_2D, textureArray[TEX_OGRE_NORMAL_MAP]);
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
@@ -417,10 +436,23 @@ void SceneBasic_Uniform::render()
         mesh->render();
     };
 
-    // TODO: Framebuffers
-    glBindProgramPipeline(PipelineName[pipeline::DIFFUSE]); GLERR;
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureArray[TEX_DIFFUSE_MAP]);
+
+    glBindProgramPipeline(PipelineName[pipeline::DIFFUSE]);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     funcRender();
-    glBindProgramPipeline(PipelineName[pipeline::PHONG]); GLERR;
+
+    ///////////////////////////////////
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+    glBindProgramPipeline(PipelineName[pipeline::PHONG]);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     funcRender();
 
     // ImGui renders on top of everything

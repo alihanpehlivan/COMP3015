@@ -29,6 +29,9 @@ private:
 public:
     SceneBasic_Uniform();
 
+    void setupUBO();
+    void setupFBO();
+
     bool initScene() override;
     void update(Camera* camera, float t) override;
     void render() override;
