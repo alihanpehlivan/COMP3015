@@ -31,7 +31,4 @@ public:
     
     // Called when screen is resized
     virtual void resize(int, int) = 0;
-
-    // Keyboard events from scenerunner
-    virtual void processKey(int key, int scancode, int action, int mods) = 0;
 };

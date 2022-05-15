@@ -232,7 +232,6 @@ void SceneRunner::OnPressKey(int key, int scancode, int action, int mods)
         glfwSetWindowShouldClose(_window, 1);
         break;
     default:
-        _scene->processKey(key, scancode, action, mods);
         break;
     }
 }

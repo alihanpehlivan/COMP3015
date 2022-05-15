@@ -81,7 +81,6 @@ namespace pipeline
     enum type
     {
         DIFFUSE,
-        PHONG,
         
         MAX,
     };
@@ -93,16 +92,14 @@ namespace program
     {
         DIFFUSE_VERT,
         DIFFUSE_FRAG,
-        PHONG_VERT,
-        PHONG_FRAG,
         
         MAX,
     };
 } // namespace program
 
+// Uniform buffer objects, shared across all programs
 namespace ubo
 {
-    // Uniform buffer objects, shared across all programs
     enum type
     {
         MATRICES,
@@ -119,7 +116,7 @@ std::array<GLuint, ubo::MAX> UBOName;
 
 ////////////////////////////////
 
-GLuint fbo;
+/*GLuint fbo;
 
 void SceneBasic_Uniform::setupFBO()
 {
@@ -152,7 +149,7 @@ void SceneBasic_Uniform::setupFBO()
         LOG_ERROR("no framebuf.");
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
+}*/
 
 void SceneBasic_Uniform::setupUBO()
 {
@@ -181,8 +178,8 @@ bool SceneBasic_Uniform::compile()
         ProgramName[program::DIFFUSE_VERT] = sm.Create();
         ProgramName[program::DIFFUSE_FRAG] = sm.Create();
 
-        glAttachShader(ProgramName[program::DIFFUSE_VERT], sm.Compile("shader/DiffuseSingleTexture.vert")); GLERR;
-        glAttachShader(ProgramName[program::DIFFUSE_FRAG], sm.Compile("shader/DiffuseSingleTexture.frag")); GLERR;
+        glAttachShader(ProgramName[program::DIFFUSE_VERT], sm.Compile("shader/02_Textured.vert")); GLERR;
+        glAttachShader(ProgramName[program::DIFFUSE_FRAG], sm.Compile("shader/02_Textured.frag")); GLERR;
 
         sm.Link(ProgramName[program::DIFFUSE_VERT]);
         sm.Link(ProgramName[program::DIFFUSE_FRAG]);
@@ -201,36 +198,11 @@ bool SceneBasic_Uniform::compile()
         return false;
 	}
 
-    try
-    {
-        ProgramName[program::PHONG_VERT] = sm.Create();
-        ProgramName[program::PHONG_FRAG] = sm.Create();
-
-        glAttachShader(ProgramName[program::PHONG_VERT], sm.Compile("shader/BlinnPhongPerFragSingleLight.vert")); GLERR;
-        glAttachShader(ProgramName[program::PHONG_FRAG], sm.Compile("shader/BlinnPhongPerFragSingleLight.frag")); GLERR;
-
-        sm.Link(ProgramName[program::PHONG_VERT]);
-        sm.Link(ProgramName[program::PHONG_FRAG]);
-
-        sm.CleanupProgram(ProgramName[program::PHONG_VERT]);
-        sm.CleanupProgram(ProgramName[program::PHONG_FRAG]);
-
-        // Test pipeline program stages
-        glUseProgramStages(PipelineName[pipeline::PHONG], GL_VERTEX_SHADER_BIT, ProgramName[program::PHONG_VERT]); GLERR;
-        glUseProgramStages(PipelineName[pipeline::PHONG], GL_FRAGMENT_SHADER_BIT, ProgramName[program::PHONG_FRAG]); GLERR;
-        sm.ValidatePipeline(PipelineName[pipeline::PHONG]);
-    }
-    catch (ShaderManagerException& e)
-    {
-        LOG_CRITICAL(e.what());
-        return false;
-    }
-
     // Generate matrices uniform buffer objects
     setupUBO();
 
     // Generate frame buffer object
-    setupFBO();
+    //setupFBO();
 
     return true;
 }
@@ -390,45 +362,54 @@ void SceneBasic_Uniform::update(Camera* camera, float t)
 
     Configs::cameraPos = camera->Position;
 
-    sm.SetUniform(ProgramName[program::PHONG_VERT], "LightPosition", view * glm::vec4(Configs::lightDist * cos(Configs::lightAngle), 1.0f, Configs::lightDist * sin(Configs::lightAngle), 1.0f));
+    sm.SetUniform(ProgramName[program::DIFFUSE_VERT], "LightPosition", view * glm::vec4(Configs::lightDist * cos(Configs::lightAngle), 1.0f, Configs::lightDist * sin(Configs::lightAngle), 1.0f));
 
-    sm.SetUniform(ProgramName[program::PHONG_FRAG], "Light.Ld", Configs::lightLd);
-    sm.SetUniform(ProgramName[program::PHONG_FRAG], "Light.Ls", Configs::lightLs);
-    sm.SetUniform(ProgramName[program::PHONG_FRAG], "Light.La", Configs::lightLa);
-    
-    sm.SetUniform(ProgramName[program::PHONG_FRAG], "Material.Ka", Configs::matKa);
-    sm.SetUniform(ProgramName[program::PHONG_FRAG], "Material.Ks", Configs::matKs);
-    sm.SetUniform(ProgramName[program::PHONG_FRAG], "Material.Shininess", Configs::matShininess);
+    // Update all uniforms
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "UseBlinnPhong", Configs::useBlinnPhong);
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "UseTextures", Configs::useTextures);
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "UseTextureMix", Configs::useTextureMix);
+
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "UseToon", Configs::useToon);
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "UseAdditiveToon", Configs::useAdditiveToon);
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "ToonFraction", Configs::toonFraction);
+
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "Light.Ld", Configs::lightLd);
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "Light.Ls", Configs::lightLs);
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "Light.La", Configs::lightLa);
+
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "Material.Ka", Configs::matKa);
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "Material.Ks", Configs::matKs);
+    sm.SetUniform(ProgramName[program::DIFFUSE_FRAG], "Material.Shininess", Configs::matShininess);
 }
 
 void SceneBasic_Uniform::render()
 {
     glUseProgram(0);
+    glBindProgramPipeline(PipelineName[pipeline::DIFFUSE]); GLERR;
+
     glClearColor(Configs::bgColor.x, Configs::bgColor.y, Configs::bgColor.z, Configs::bgColor.w);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     std::function<void()> funcRender =
         [&]()
     {
-        //glBindProgramPipeline(PipelineName[pipeline::PHONG]); GLERR; // TEST
         // Render Plane
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, textureArray[TEX_DIFFUSE_MAP]);
-        //glActiveTexture(GL_TEXTURE1);
-        //glBindTexture(GL_TEXTURE_2D, textureArray[TEX_NORMAL_MAP]);
-        //glActiveTexture(GL_TEXTURE2);
-        //glBindTexture(GL_TEXTURE_2D, textureArray[TEX_MOSS]);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureArray[TEX_DIFFUSE_MAP]);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, textureArray[TEX_NORMAL_MAP]);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, textureArray[TEX_MOSS]);
 
         model = glm::mat4(1.0f);
         setMatrices();
         plane.render();
 
-        //glBindProgramPipeline(PipelineName[pipeline::DIFFUSE]); GLERR; // TEST
         // Render the Mesh
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, textureArray[TEX_OGRE_DIFFUSE_MAP]);
-        //glActiveTexture(GL_TEXTURE1);
-        //glBindTexture(GL_TEXTURE_2D, textureArray[TEX_OGRE_NORMAL_MAP]);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureArray[TEX_OGRE_DIFFUSE_MAP]);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, textureArray[TEX_OGRE_NORMAL_MAP]);
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
@@ -436,23 +417,7 @@ void SceneBasic_Uniform::render()
         mesh->render();
     };
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureArray[TEX_DIFFUSE_MAP]);
-
-    glBindProgramPipeline(PipelineName[pipeline::DIFFUSE]);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    funcRender();
-
-    ///////////////////////////////////
-
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-    glBindProgramPipeline(PipelineName[pipeline::PHONG]);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    //glBindProgramPipeline(PipelineName[pipeline::DIFFUSE]); GLERR;
     funcRender();
 
     // ImGui renders on top of everything
@@ -476,13 +441,4 @@ void SceneBasic_Uniform::resize(int w, int h)
     width = w;
     height = h;
     projection = glm::perspective(glm::radians(70.0f), (float)w / h, 0.3f, 100.0f);
-}
-
-void SceneBasic_Uniform::processKey(int key, int scancode, int action, int mods)
-{
-    switch (key)
-    {
-    default:
-        break;
-    }
 }

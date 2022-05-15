@@ -36,7 +36,4 @@ public:
     void update(Camera* camera, float t) override;
     void render() override;
     void resize(int, int) override;
-
-    // Keyboard events from scenerunner
-    void processKey(int key, int scancode, int action, int mods);
 };
