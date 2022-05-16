@@ -40,7 +40,7 @@ namespace Configs
     static float waveAmp = 0.6f;
 
     // Texture Settings
-    static bool usePerlinTexture = true;
+    static bool usePerlinTexture = false;
     static float perlinBaseFreq = 16.f;
     static float perlinPersistence = 0.5;
     static int perlinWidth = 128;
