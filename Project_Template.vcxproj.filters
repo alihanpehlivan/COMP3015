@@ -97,34 +97,22 @@
     <ClCompile Include="src\helper\shader_manager.cpp">
       <Filter>helper</Filter>
     </ClCompile>
+    <ClCompile Include="src\helper\noisetex.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="shader\01_PerFrag_BlinngPhong.frag">
+    <None Include="shader\TextureMixed.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shader\01_PerFrag_BlinngPhong.vert">
+    <None Include="shader\TextureMixed.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shader\02_Textured.frag">
+    <None Include="shader\TextureMixed.geom">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shader\02_Textured.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\02_Textured.geom">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\DiffuseSingleTexture.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\BlinnPhongPerFragSingleLight.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\DiffuseSingleTexture.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\BlinnPhongPerFragSingleLight.vert">
+    <None Include="shader\TextureMixedWave.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
@@ -223,6 +211,9 @@
       <Filter>helper</Filter>
     </ClInclude>
     <ClInclude Include="src\helper\shader_manager.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\noisetex.h">
       <Filter>helper</Filter>
     </ClInclude>
   </ItemGroup>

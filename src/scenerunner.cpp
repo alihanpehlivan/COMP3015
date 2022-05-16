@@ -153,7 +153,7 @@ int SceneRunner::run(Camera* camera, Scene* scene)
 	assert(_scene != nullptr);
 
     _scene->setDimensions(_fbw, _fbh);
-    bool ret = _scene->initScene();
+    bool ret = _scene->initScene(camera);
     _scene->resize(_fbw, _fbh);
 
     // If can't initialize the scene, gracefully shut down the app
@@ -190,7 +190,7 @@ void SceneRunner::loop()
         _deltaTime = currentFrame - _lastFrame;
         _lastFrame = currentFrame;
 
-        _scene->update(_camera, currentFrame);
+        _scene->update(currentFrame);
         _scene->render();
 
         glfwSwapBuffers(_window);

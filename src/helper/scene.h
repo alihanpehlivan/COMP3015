@@ -21,10 +21,10 @@ public:
     }
    
     // Load textures, initialize shaders, etc.
-    virtual bool initScene() = 0;
+    virtual bool initScene(Camera* camera) = 0;
 
     // This is called prior to every frame.  Use this to update your animation.
-    virtual void update( Camera* camera, float t ) = 0;
+    virtual void update(float t) = 0;
 
     // Draw your scene.
     virtual void render() = 0;

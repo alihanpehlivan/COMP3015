@@ -119,6 +119,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\helper\noisetex.cpp" />
     <ClCompile Include="src\helper\shader_manager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\pch.h</PrecompiledHeaderFile>
@@ -205,15 +206,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="shader\01_PerFrag_BlinngPhong.frag" />
-    <None Include="shader\01_PerFrag_BlinngPhong.vert" />
-    <None Include="shader\02_Textured.frag" />
-    <None Include="shader\02_Textured.geom" />
-    <None Include="shader\02_Textured.vert" />
-    <None Include="shader\BlinnPhongPerFragSingleLight.frag" />
-    <None Include="shader\BlinnPhongPerFragSingleLight.vert" />
-    <None Include="shader\DiffuseSingleTexture.frag" />
-    <None Include="shader\DiffuseSingleTexture.vert" />
+    <None Include="shader\TextureMixed.frag" />
+    <None Include="shader\TextureMixed.geom" />
+    <None Include="shader\TextureMixed.vert" />
+    <None Include="shader\TextureMixedWave.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h" />
@@ -230,6 +226,7 @@
     <ClInclude Include="src\helper\camera.h" />
     <ClInclude Include="src\helper\cube.h" />
     <ClInclude Include="src\helper\drawable.h" />
+    <ClInclude Include="src\helper\noisetex.h" />
     <ClInclude Include="src\helper\shader_manager.h" />
     <ClInclude Include="src\helper\glutils.h" />
     <ClInclude Include="src\helper\objmesh.h" />

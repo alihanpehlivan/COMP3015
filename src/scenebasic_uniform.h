@@ -15,13 +15,14 @@ class Camera;
 class SceneBasic_Uniform : public Scene
 {
 private:
+    Camera* camera;
     ShaderManager sm;
 
     Plane plane;
     Cube cube;
     std::unique_ptr<ObjMesh> mesh;
 
-    float tPrev = 0.0f, rotSpeed = 0.5f;
+    float timePrev = 0.0f, rotSpeed = 0.5f;
 
     void setMatrices();
     bool compile();
@@ -30,10 +31,9 @@ public:
     SceneBasic_Uniform();
 
     void setupUBO();
-    void setupFBO();
 
-    bool initScene() override;
-    void update(Camera* camera, float t) override;
+    bool initScene(Camera* camera) override;
+    void update(float t) override;
     void render() override;
     void resize(int, int) override;
 };
